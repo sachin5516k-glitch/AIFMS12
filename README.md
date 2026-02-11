@@ -1,0 +1,1 @@
+# AI Franchise Management System
