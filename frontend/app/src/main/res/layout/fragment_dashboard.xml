@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dashboard"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="32dp"/>
+
+    <Button
+        android:id="@+id/btnSales"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Record Sales"/>
+
+    <Button
+        android:id="@+id/btnInventory"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Update Inventory"
+        android:layout_marginTop="16dp"/>
+
+    <Button
+        android:id="@+id/btnAttendance"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Staff Attendance"
+        android:layout_marginTop="16dp"/>
+
+    <Button
+        android:id="@+id/btnAi"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="View AI Insights"
+        android:backgroundTint="#6200EE"
+        android:layout_marginTop="16dp"/>
+
+</LinearLayout>

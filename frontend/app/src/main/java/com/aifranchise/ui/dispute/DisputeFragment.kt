@@ -1,0 +1,41 @@
+package com.aifranchise.ui.dispute
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import com.aifranchise.databinding.FragmentDisputeBinding
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
+class DisputeFragment : Fragment() {
+
+    private var _binding: FragmentDisputeBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentDisputeBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        
+        binding.btnSubmitDispute.setOnClickListener {
+            val reason = binding.etReason.text.toString()
+            if (reason.isNotBlank()) {
+                 Toast.makeText(context, "Dispute Raised (Mock)", Toast.LENGTH_SHORT).show()
+                 // Logic to call Repository would go here
+            }
+        }
+    }
+    
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}

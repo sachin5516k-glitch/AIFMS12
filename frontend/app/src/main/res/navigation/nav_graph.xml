@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.aifranchise.ui.auth.LoginFragment"
+        android:label="Login"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_login_to_owner"
+            app:destination="@id/ownerDashboardFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_login_to_manager"
+            app:destination="@id/managerDashboardFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_login_to_outlet"
+            app:destination="@id/outletDashboardFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/ownerDashboardFragment"
+        android:name="com.aifranchise.ui.dashboard.OwnerDashboardFragment"
+        android:label="Owner Dashboard"
+        tools:layout="@layout/fragment_dashboard">
+        <action android:id="@+id/to_sales" app:destination="@id/salesFragment"/>
+        <action android:id="@+id/to_inventory" app:destination="@id/inventoryFragment"/>
+        <action android:id="@+id/to_attendance" app:destination="@id/attendanceFragment"/>
+        <action android:id="@+id/to_ai" app:destination="@id/aiInsightsFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/managerDashboardFragment"
+        android:name="com.aifranchise.ui.dashboard.ManagerDashboardFragment"
+        android:label="Manager Dashboard"
+        tools:layout="@layout/fragment_dashboard"/>
+        
+    <fragment
+        android:id="@+id/outletDashboardFragment"
+        android:name="com.aifranchise.ui.dashboard.OutletDashboardFragment"
+        android:label="Outlet Dashboard"
+        tools:layout="@layout/fragment_dashboard">
+        <action android:id="@+id/to_sales" app:destination="@id/salesFragment"/>
+        <action android:id="@+id/to_inventory" app:destination="@id/inventoryFragment"/>
+        <action android:id="@+id/to_attendance" app:destination="@id/attendanceFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/salesFragment"
+        android:name="com.aifranchise.ui.sales.SalesFragment"
+        android:label="Sales"
+        tools:layout="@layout/fragment_sales"/>
+        
+    <fragment
+        android:id="@+id/inventoryFragment"
+        android:name="com.aifranchise.ui.inventory.InventoryFragment"
+        android:label="Inventory"
+        tools:layout="@layout/fragment_inventory"/>
+
+    <fragment
+        android:id="@+id/attendanceFragment"
+        android:name="com.aifranchise.ui.attendance.AttendanceFragment"
+        android:label="Attendance"
+        tools:layout="@layout/fragment_attendance"/>
+
+    <fragment
+        android:id="@+id/aiInsightsFragment"
+        android:name="com.aifranchise.ui.ai.AiInsightsFragment"
+        android:label="AI Insights"
+        tools:layout="@layout/fragment_ai_insights"/>
+
+    <fragment
+        android:id="@+id/disputeFragment"
+        android:name="com.aifranchise.ui.dispute.DisputeFragment"
+        android:label="Raise Dispute"
+        tools:layout="@layout/fragment_dispute"/>
+
+    <fragment
+        android:id="@+id/reportsFragment"
+        android:name="com.aifranchise.ui.reports.ReportsFragment"
+        android:label="Reports"
+        tools:layout="@layout/fragment_reports"/>
+
+</navigation>
