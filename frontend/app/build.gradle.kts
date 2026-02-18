@@ -47,6 +47,15 @@ android {
         viewBinding = true
         buildConfig = true
     }
+
+    // This is a workaround for a bug in the Android Gradle plugin
+    // and specifically the JdkImageTransform.
+    applicationVariants.all {
+        val variant = this
+        if (variant.name.contains("debug", ignoreCase = true)) {
+            variant.javaCompileProvider.get().options.compilerArgs.add("-Xlint:-options")
+        }
+    }
 }
 
 dependencies {

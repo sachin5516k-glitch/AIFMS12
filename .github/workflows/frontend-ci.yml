@@ -50,3 +50,12 @@ jobs:
       with:
         name: frontend-lint-reports
         path: frontend/app/build/reports/lint-results-debug.html
+
+    - name: Build Release APK
+      run: ./gradlew assembleRelease --no-daemon --stacktrace
+
+    - name: Upload Release APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: franchise-release-apk
+        path: frontend/app/build/outputs/apk/release/app-release.apk
