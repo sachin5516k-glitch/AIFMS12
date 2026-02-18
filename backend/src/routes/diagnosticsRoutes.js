@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const { protect, admin } = require('../../middleware/authMiddleware');
+const { protect, admin } = require('../middleware/authMiddleware');
 const os = require('os');
 
 // @desc    Get system diagnostics
