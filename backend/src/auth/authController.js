@@ -11,12 +11,17 @@ const generateToken = (id) => {
 // @desc    Auth user & get token
 // @route   POST /api/auth/login
 // @access  Public
+const logger = require('../utils/logger');
+
+// ...
+
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
+        logger.info(`Login Success: ${email}`, { service: 'auth-service', userId: user._id });
         res.json({
             _id: user._id,
             name: user.name,
@@ -26,6 +31,7 @@ const loginUser = asyncHandler(async (req, res) => {
             token: generateToken(user._id),
         });
     } else {
+        logger.warn(`Login Failed: ${email}`, { service: 'auth-service', ip: req.ip });
         res.status(401);
         throw new Error('Invalid email or password');
     }

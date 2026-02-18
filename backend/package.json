@@ -8,7 +8,8 @@
     "dev": "nodemon src/server.js",
     "verify-db": "node scripts/verify_db.js",
     "backup-db": "node scripts/backup_db.js",
-    "test": "cross-env NODE_ENV=test jest --runInBand"
+    "test": "cross-env NODE_ENV=test jest --runInBand --coverage",
+    "lint": "eslint src/"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +17,7 @@
   "type": "commonjs",
   "devDependencies": {
     "cross-env": "^10.1.0",
+    "eslint": "^10.0.0",
     "jest": "^30.2.0",
     "mongodb-memory-server": "^11.0.1",
     "nodemon": "^3.1.11",
@@ -32,6 +34,8 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.2.1",
     "morgan": "^1.10.1",
-    "node-cron": "^4.2.1"
+    "node-cron": "^4.2.1",
+    "winston": "^3.19.0",
+    "winston-daily-rotate-file": "^5.0.0"
   }
 }

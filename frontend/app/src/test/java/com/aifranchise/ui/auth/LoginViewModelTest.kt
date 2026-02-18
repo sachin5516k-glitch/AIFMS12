@@ -33,17 +33,20 @@ class LoginViewModelTest {
         viewModel = LoginViewModel(repository)
     }
 
+
     @Test
     fun `login with valid credentials updates state to Success`() = runTest {
         // Given
         val email = "test@example.com"
         val password = "password"
+        val loginRequest = com.aifranchise.data.remote.LoginRequest(email, password)
+        val userDto = com.aifranchise.data.remote.UserDto("id", "name", "owner", "outlet1")
         val mockResponse = com.aifranchise.data.remote.LoginResponse(
             token = "token", 
-            user = com.aifranchise.data.remote.UserDto("id", "name", email, "owner", "outlet1")
+            user = userDto
         )
-        // Using ResultState.Success(mockResponse)
-        `when`(repository.login(email, password)).thenReturn(flowOf(ResultState.Success(mockResponse)))
+        
+        `when`(repository.login(loginRequest)).thenReturn(flowOf(ResultState.Success(mockResponse)))
 
         // When
         viewModel.login(email, password)
@@ -56,5 +59,6 @@ class LoginViewModelTest {
     fun `login with empty credentials sets error state`() = runTest {
         viewModel.login("", "")
         assertTrue(viewModel.loginState.value is ResultState.Error)
+        assertEquals("Email and Password required", (viewModel.loginState.value as ResultState.Error).exception.message)
     }
 }

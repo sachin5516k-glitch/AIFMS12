@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import com.aifranchise.data.remote.LoginRequest
+
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val repository: AuthRepository
@@ -20,19 +22,16 @@ class LoginViewModel @Inject constructor(
     private val _loginState = MutableStateFlow<ResultState<Any>>(ResultState.Loading)
     val loginState = _loginState.asStateFlow()
 
-    fun login(email: String, p0: String) {
-        if (email.isEmpty() || p0.isEmpty()) {
-            _loginState.value = ResultState.Error("Email and Password required")
+    fun login(email: String, password: String) {
+        if (email.isEmpty() || password.isEmpty()) {
+            _loginState.value = ResultState.Error(java.lang.Exception("Email and Password required"))
             return
         }
         
         viewModelScope.launch {
             _loginState.value = ResultState.Loading
-            repository.login(email, p0).collect { result ->
-                // Assuming result is generic ResultState, need to cast or map
-                // For simplicity, just passing through if types align
-                // In real app, might map LoginResponse to UI Model
-                _loginState.value = result as ResultState<Any> 
+            repository.login(LoginRequest(email, password)).collect { result ->
+                _loginState.value = result
             }
         }
     }
