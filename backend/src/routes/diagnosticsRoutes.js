@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const { protect, admin } = require('../middleware/authMiddleware');
+const { protect, authorize } = require('../middleware/authMiddleware');
 const os = require('os');
 
 // @desc    Get system diagnostics
 // @route   GET /api/admin/diagnostics
 // @access  Private/Admin
-router.get('/diagnostics', protect, admin, (req, res) => {
+router.get('/diagnostics', protect, authorize('admin'), (req, res) => {
 
     const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
     const usedMemory = process.memoryUsage().heapUsed / 1024 / 1024;
