@@ -38,7 +38,7 @@ class SalesViewModelTest {
         // Given
         val amount = "5000"
         val paymentMode = "Cash"
-        val mockResponse = SalesResponse("id", "outlet1", 5000.0, "Cash", "url", 0, "pending")
+        val mockResponse = SalesResponse("id", "pending", 0)
         
         // Mocking the repository to return success flow when ANY SalesRequest is passed
         // In a real test, use ArgumentCaptor to verify the request fields
