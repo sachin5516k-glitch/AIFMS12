@@ -4,7 +4,7 @@ const User = require('./userModel');
 
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: '30d',
+        expiresIn: '7d',
     });
 };
 
@@ -23,12 +23,13 @@ const loginUser = asyncHandler(async (req, res) => {
     if (user && (await user.matchPassword(password))) {
         logger.info(`Login Success: ${email}`, { service: 'auth-service', userId: user._id });
         res.json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            outletId: user.outletId,
             token: generateToken(user._id),
+            user: {
+                id: user._id,
+                name: user.name,
+                role: user.role,
+                branchId: user.outletId,
+            }
         });
     } else {
         logger.warn(`Login Failed: ${email}`, { service: 'auth-service', ip: req.ip });
@@ -60,12 +61,13 @@ const registerUser = asyncHandler(async (req, res) => {
 
     if (user) {
         res.status(201).json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            outletId: user.outletId,
             token: generateToken(user._id),
+            user: {
+                id: user._id,
+                name: user.name,
+                role: user.role,
+                branchId: user.outletId,
+            }
         });
     } else {
         res.status(400);
