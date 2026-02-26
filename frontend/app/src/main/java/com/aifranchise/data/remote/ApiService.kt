@@ -6,43 +6,52 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import com.google.gson.annotations.SerializedName
 
+data class ApiResponse<T>(
+    val success: Boolean,
+    val message: String,
+    val data: T
+)
+
 interface ApiService {
     
     @POST("auth/login")
-    suspend fun login(@Body request: LoginRequest): LoginResponse
+    suspend fun login(@Body request: LoginRequest): ApiResponse<LoginResponse>
 
     // Sales
     @POST("sales/submit")
-    suspend fun submitSales(@Body request: SalesRequest): SalesResponse
+    suspend fun submitSales(@Body request: SalesRequest): ApiResponse<SalesResponse>
 
     // Inventory
     @GET("inventory/items")
-    suspend fun getInventoryItems(): List<InventoryItem>
+    suspend fun getInventoryItems(): ApiResponse<List<InventoryItem>>
     
     @POST("inventory/submit")
-    suspend fun submitInventory(@Body request: InventoryRequest): InventoryResponse
+    suspend fun submitInventory(@Body request: InventoryRequest): ApiResponse<InventoryResponse>
 
     // Attendance
     @POST("attendance/checkin")
-    suspend fun checkIn(@Body request: AttendanceRequest): AttendanceResponse
+    suspend fun checkIn(@Body request: AttendanceRequest): ApiResponse<AttendanceResponse>
     
     @POST("attendance/checkout")
-    suspend fun checkOut(@Body request: AttendanceRequest): AttendanceResponse
+    suspend fun checkOut(@Body request: AttendanceRequest): ApiResponse<AttendanceResponse>
 
     // AI Insights
     @GET("ai/insights/{outletId}")
-    suspend fun getAiInsights(@Path("outletId") outletId: String): AiInsightsResponse
+    suspend fun getAiInsights(@Path("outletId") outletId: String): ApiResponse<AiInsightsResponse>
 }
 
 // Auth
 data class LoginRequest(val email: String, val password: String)
 data class LoginResponse(
-    @SerializedName("_id") val id: String,
+    val token: String,
+    val user: UserDto
+)
+
+data class UserDto(
+    val id: String,
     val name: String,
-    val email: String,
     val role: String,
-    val outletId: String?,
-    val token: String
+    val branchId: String?
 )
 
 // Sales

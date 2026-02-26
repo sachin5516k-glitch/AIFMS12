@@ -40,7 +40,11 @@ const submitSales = asyncHandler(async (req, res) => {
         console.warn(`High Fraud Score detected for Outlet ${outletId}: ${score}. Reasons: ${reasons.join(', ')}`);
     }
 
-    res.status(201).json(sales);
+    res.status(201).json({
+        success: true,
+        message: 'Sales submitted successfully',
+        data: sales
+    });
 });
 
 // @desc    Get sales history
@@ -48,7 +52,11 @@ const submitSales = asyncHandler(async (req, res) => {
 // @access  Private
 const getSales = asyncHandler(async (req, res) => {
     const sales = await Sales.find({ outletId: req.params.outletId });
-    res.json(sales);
+    res.json({
+        success: true,
+        message: 'Sales retrieved successfully',
+        data: sales
+    });
 });
 
 module.exports = { submitSales, getSales };

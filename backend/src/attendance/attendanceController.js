@@ -31,7 +31,11 @@ const checkIn = asyncHandler(async (req, res) => {
         photoUrl: imageUrl,
     });
 
-    res.status(201).json(attendance);
+    res.status(201).json({
+        success: true,
+        message: 'Checked in successfully',
+        data: attendance
+    });
 });
 
 // @desc    Check Out
@@ -54,7 +58,11 @@ const checkOut = asyncHandler(async (req, res) => {
     attendance.checkOutTime = new Date();
     await attendance.save();
 
-    res.status(200).json(attendance);
+    res.status(200).json({
+        success: true,
+        message: 'Checked out successfully',
+        data: attendance
+    });
 });
 
 module.exports = { checkIn, checkOut };

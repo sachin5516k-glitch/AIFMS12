@@ -23,12 +23,16 @@ const loginUser = asyncHandler(async (req, res) => {
     if (user && (await user.matchPassword(password))) {
         logger.info(`Login Success: ${email}`, { service: 'auth-service', userId: user._id });
         res.json({
-            token: generateToken(user._id),
-            user: {
-                id: user._id,
-                name: user.name,
-                role: user.role,
-                branchId: user.outletId,
+            success: true,
+            message: 'Login successful',
+            data: {
+                token: generateToken(user._id),
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    role: user.role,
+                    branchId: user.outletId,
+                }
             }
         });
     } else {
@@ -61,12 +65,16 @@ const registerUser = asyncHandler(async (req, res) => {
 
     if (user) {
         res.status(201).json({
-            token: generateToken(user._id),
-            user: {
-                id: user._id,
-                name: user.name,
-                role: user.role,
-                branchId: user.outletId,
+            success: true,
+            message: 'Registration successful',
+            data: {
+                token: generateToken(user._id),
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    role: user.role,
+                    branchId: user.outletId,
+                }
             }
         });
     } else {

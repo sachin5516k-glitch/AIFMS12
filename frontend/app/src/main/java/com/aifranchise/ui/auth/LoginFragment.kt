@@ -56,7 +56,7 @@ class LoginFragment : Fragment() {
                     is ResultState.Success -> {
                         binding.progressBar.isVisible = false
                         binding.btnLogin.isEnabled = true
-                        handleRoleNavigation(state.data.role)
+                        handleRoleNavigation(state.data.user.role)
                     }
                     is ResultState.Error -> {
                         binding.progressBar.isVisible = false

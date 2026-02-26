@@ -11,15 +11,21 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class AuthRepository @Inject constructor(
-    private val apiService: ApiService
+    private val apiService: ApiService,
+    private val tokenManager: com.aifranchise.util.TokenManager
 ) {
     suspend fun login(request: LoginRequest): Flow<ResultState<LoginResponse>> = flow {
         emit(ResultState.Loading)
         try {
             val response = apiService.login(request)
-            emit(ResultState.Success(response))
+            if (response.success) {
+                tokenManager.saveToken(response.data.token)
+                emit(ResultState.Success(response.data))
+            } else {
+                emit(ResultState.Error(Exception(response.message)))
+            }
         } catch (e: Exception) {
-            emit(ResultState.Error(e))
+            emit(ResultState.Error(Exception(com.aifranchise.util.ApiUtils.parseError(e))))
         }
     }.flowOn(Dispatchers.IO)
 }

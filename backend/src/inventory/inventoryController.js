@@ -25,7 +25,11 @@ const submitInventory = asyncHandler(async (req, res) => {
         items: processedItems,
     });
 
-    res.status(201).json(inventory);
+    res.status(201).json({
+        success: true,
+        message: 'Inventory submitted successfully',
+        data: inventory
+    });
 });
 
 // @desc    Get Inventory Items (Mock for now)
@@ -37,7 +41,11 @@ const getInventoryItems = asyncHandler(async (req, res) => {
         { id: "item_002", name: "Cheese Slice", lastStock: 100 },
         { id: "item_003", name: "Patty", lastStock: 45 }
     ];
-    res.json(mockItems);
+    res.json({
+        success: true,
+        message: 'Items retrieved successfully',
+        data: mockItems
+    });
 });
 
 module.exports = { submitInventory, getInventoryItems };

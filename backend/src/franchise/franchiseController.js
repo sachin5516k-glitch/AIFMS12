@@ -14,7 +14,11 @@ const createFranchise = asyncHandler(async (req, res) => {
         royaltyPercentage,
     });
 
-    res.status(201).json(franchise);
+    res.status(201).json({
+        success: true,
+        message: 'Franchise created successfully',
+        data: franchise
+    });
 });
 
 // @desc    Get all franchises
@@ -22,7 +26,11 @@ const createFranchise = asyncHandler(async (req, res) => {
 // @access  Private
 const getFranchises = asyncHandler(async (req, res) => {
     const franchises = await Franchise.find({});
-    res.json(franchises);
+    res.json({
+        success: true,
+        message: 'Franchises retrieved successfully',
+        data: franchises
+    });
 });
 
 module.exports = { createFranchise, getFranchises };

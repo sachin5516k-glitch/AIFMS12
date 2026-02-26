@@ -17,9 +17,13 @@ class SalesRepository @Inject constructor(
         emit(ResultState.Loading)
         try {
             val response = apiService.submitSales(request)
-            emit(ResultState.Success(response))
+            if (response.success) {
+                emit(ResultState.Success(response.data))
+            } else {
+                emit(ResultState.Error(Exception(response.message)))
+            }
         } catch (e: Exception) {
-            emit(ResultState.Error(e))
+            emit(ResultState.Error(Exception(com.aifranchise.util.ApiUtils.parseError(e))))
         }
     }.flowOn(Dispatchers.IO)
 }

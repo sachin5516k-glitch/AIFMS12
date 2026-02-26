@@ -26,8 +26,28 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient {
+    fun provideAuthInterceptor(tokenManager: com.aifranchise.util.TokenManager): okhttp3.Interceptor {
+        return okhttp3.Interceptor { chain ->
+            val requestBuilder = chain.request().newBuilder()
+            tokenManager.getToken()?.let { token ->
+                requestBuilder.addHeader("Authorization", "Bearer $token")
+            }
+            val response = chain.proceed(requestBuilder.build())
+            if (response.code == 401) {
+                tokenManager.forceLogout()
+            }
+            response
+        }
+    }
+
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor,
+        authInterceptor: okhttp3.Interceptor
+    ): OkHttpClient {
         return OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
             .connectTimeout(90, TimeUnit.SECONDS)
             .readTimeout(90, TimeUnit.SECONDS)
