@@ -4,6 +4,7 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.GET
 import retrofit2.http.Path
+import com.google.gson.annotations.SerializedName
 
 interface ApiService {
     
@@ -32,8 +33,6 @@ interface ApiService {
     @GET("ai/insights/{outletId}")
     suspend fun getAiInsights(@Path("outletId") outletId: String): AiInsightsResponse
 }
-
-import com.google.gson.annotations.SerializedName
 
 // Auth
 data class LoginRequest(val email: String, val password: String)
