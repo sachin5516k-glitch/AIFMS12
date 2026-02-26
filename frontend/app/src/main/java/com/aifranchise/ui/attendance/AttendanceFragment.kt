@@ -59,7 +59,8 @@ class AttendanceFragment : Fragment() {
                     is ResultState.Loading -> binding.progressBar.isVisible = true
                     is ResultState.Success -> {
                         binding.progressBar.isVisible = false
-                        Toast.makeText(context, "Attendance Marked: ${state.data.status} at ${state.data.time}", Toast.LENGTH_LONG).show()
+                        binding.btnCheckIn.isEnabled = true
+                        Toast.makeText(context, "Attendance Marked: ${state.data.status} at ${state.data.checkInTime}", Toast.LENGTH_LONG).show()
                     }
                     is ResultState.Error -> {
                         binding.progressBar.isVisible = false
