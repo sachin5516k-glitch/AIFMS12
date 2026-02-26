@@ -52,16 +52,35 @@ data class SalesRequest(
     val paymentMode: String,
     val imageUrl: String // URL from separate upload or Base64 for now
 )
-data class SalesResponse(val id: String, val status: String, val fraudScore: Int)
+data class SalesResponse(
+    @SerializedName("_id") val id: String, 
+    val status: String, 
+    val fraudScore: Int
+)
 
 // Inventory
-data class InventoryItem(val id: String, val name: String, val lastStock: Int)
+data class InventoryItem(
+    @SerializedName("_id") val id: String, 
+    val name: String, 
+    val lastStock: Int
+)
 data class InventoryRequest(
     val outletId: String,
     val items: List<InventoryUpdateItem>
 )
 data class InventoryUpdateItem(val itemId: String, val opening: Int, val closing: Int)
-data class InventoryResponse(val status: String, val varianceIds: List<String>)
+
+data class InventoryResponse(
+    @SerializedName("_id") val id: String,
+    val items: List<InventoryResultItem>
+)
+data class InventoryResultItem(
+    val itemId: String,
+    val opening: Int,
+    val closing: Int,
+    val variance: Int,
+    @SerializedName("_id") val id: String
+)
 
 // Attendance
 data class AttendanceRequest(
@@ -71,7 +90,12 @@ data class AttendanceRequest(
     val longitude: Double,
     val imageUrl: String
 )
-data class AttendanceResponse(val status: String, val time: String)
+data class AttendanceResponse(
+    @SerializedName("_id") val id: String,
+    val status: String, 
+    val checkInTime: String?,
+    val checkOutTime: String?
+)
 
 // AI Insights
 data class AiInsightsResponse(
