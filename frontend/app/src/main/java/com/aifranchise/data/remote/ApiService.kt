@@ -33,10 +33,18 @@ interface ApiService {
     suspend fun getAiInsights(@Path("outletId") outletId: String): AiInsightsResponse
 }
 
+import com.google.gson.annotations.SerializedName
+
 // Auth
 data class LoginRequest(val email: String, val password: String)
-data class LoginResponse(val token: String, val user: UserDto)
-data class UserDto(val id: String, val name: String, val role: String, val outletId: String?)
+data class LoginResponse(
+    @SerializedName("_id") val id: String,
+    val name: String,
+    val email: String,
+    val role: String,
+    val outletId: String?,
+    val token: String
+)
 
 // Sales
 data class SalesRequest(

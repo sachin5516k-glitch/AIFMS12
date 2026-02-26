@@ -56,7 +56,7 @@ class LoginFragment : Fragment() {
                     is ResultState.Success -> {
                         binding.progressBar.isVisible = false
                         binding.btnLogin.isEnabled = true
-                        handleRoleNavigation(state.data.user.role)
+                        handleRoleNavigation(state.data.role)
                     }
                     is ResultState.Error -> {
                         binding.progressBar.isVisible = false
@@ -70,10 +70,10 @@ class LoginFragment : Fragment() {
     }
 
     private fun handleRoleNavigation(role: String) {
-        val action = when (role) {
-            "SUPER_ADMIN" -> R.id.action_login_to_owner
-            "REGIONAL_MANAGER" -> R.id.action_login_to_manager
-            "OUTLET_MANAGER" -> R.id.action_login_to_outlet
+        val action = when (role.lowercase()) {
+            "owner" -> R.id.action_login_to_owner
+            "manager" -> R.id.action_login_to_manager
+            "outlet_manager" -> R.id.action_login_to_outlet
             else -> {
                 Toast.makeText(context, "Unknown Role: $role", Toast.LENGTH_LONG).show()
                 return
