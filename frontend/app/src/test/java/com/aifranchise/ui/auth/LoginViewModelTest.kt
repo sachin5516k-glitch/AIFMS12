@@ -41,12 +41,13 @@ class LoginViewModelTest {
         val password = "password"
         val loginRequest = com.aifranchise.data.remote.LoginRequest(email, password)
         val mockResponse = com.aifranchise.data.remote.LoginResponse(
-            id = "id",
-            name = "name",
-            email = email,
-            role = "owner",
-            outletId = "outlet1",
-            token = "token"
+            token = "token",
+            user = com.aifranchise.data.remote.UserDto(
+                id = "id",
+                name = "name",
+                role = "owner",
+                branchId = "outlet1"
+            )
         )
         
         `when`(repository.login(loginRequest)).thenReturn(flowOf(ResultState.Success(mockResponse)))
