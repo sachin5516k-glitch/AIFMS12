@@ -52,7 +52,8 @@ require('./utils/shutdown')(app);
 
 // Routes
 app.use('/api/auth', require('./auth/authRoutes'));
-app.use('/api/franchise', require('./franchise/franchiseRoutes'));
+app.use('/api/branches', require('./branch/branchRoutes'));
+app.use('/api/items', require('./item/itemRoutes'));
 app.use('/api/sales', require('./sales/salesRoutes'));
 app.use('/api/inventory', require('./inventory/inventoryRoutes'));
 app.use('/api/attendance', require('./attendance/attendanceRoutes'));

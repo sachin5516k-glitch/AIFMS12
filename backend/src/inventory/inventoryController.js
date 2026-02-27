@@ -1,50 +1,51 @@
 const asyncHandler = require('express-async-handler');
 const Inventory = require('./inventoryModel');
 
-// @desc    Submit inventory
-// @route   POST /api/inventory/submit
-// @access  Private
 const submitInventory = asyncHandler(async (req, res) => {
-    const { outletId, items } = req.body;
+    const branchId = req.user.role === 'admin' ? req.body.branchId : req.user.branchId;
+    const { items } = req.body; // array of { itemId, quantityAdded }
 
-    if (!items || items.length === 0) {
+    if (!branchId || !items || items.length === 0) {
         res.status(400);
-        throw new Error('No items to submit');
+        throw new Error('Please provide branchId and items');
     }
 
-    // Calculate Variance
-    const processedItems = items.map((item) => {
-        // Variance = Opening - Closing (Sales logic to be added in Part 2)
-        // For now: Simple diff
-        const variance = item.opening - item.closing;
-        return { ...item, variance };
-    });
-
-    const inventory = await Inventory.create({
-        outletId,
-        items: processedItems,
-    });
+    const updatedItems = [];
+    for (const item of items) {
+        let inv = await Inventory.findOne({ branchId, itemId: item.itemId });
+        if (!inv) {
+            // Create new inventory record if it doesnt exist
+            inv = await Inventory.create({
+                branchId,
+                itemId: item.itemId,
+                quantity: item.quantityAdded
+            });
+        } else {
+            inv.quantity += item.quantityAdded;
+            inv.lastUpdated = new Date();
+            await inv.save();
+        }
+        updatedItems.push(inv);
+    }
 
     res.status(201).json({
         success: true,
-        message: 'Inventory submitted successfully',
-        data: inventory
+        message: 'Inventory updated successfully',
+        data: updatedItems
     });
 });
 
-// @desc    Get Inventory Items (Mock for now)
-// @route   GET /api/inventory/items
 const getInventoryItems = asyncHandler(async (req, res) => {
-    // In real app, fetch from Product Catalog
-    const mockItems = [
-        { id: "item_001", name: "Burger Bun", lastStock: 50 },
-        { id: "item_002", name: "Cheese Slice", lastStock: 100 },
-        { id: "item_003", name: "Patty", lastStock: 45 }
-    ];
+    const branchId = req.user.role === 'admin' ? (req.query.branchId || null) : req.user.branchId;
+    let query = {};
+    if (branchId) query.branchId = branchId;
+
+    const inventory = await Inventory.find(query).populate('itemId', 'name category unitPrice');
+
     res.json({
         success: true,
-        message: 'Items retrieved successfully',
-        data: mockItems
+        message: 'Inventory retrieved successfully',
+        data: inventory
     });
 });
 

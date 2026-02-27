@@ -2,26 +2,33 @@ const mongoose = require('mongoose');
 
 const inventorySchema = mongoose.Schema(
     {
-        outletId: {
-            type: String,
+        branchId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Branch',
             required: true,
+            index: true
         },
-        items: [
-            {
-                itemId: String,
-                opening: Number,
-                closing: Number,
-                variance: Number,
-            },
-        ],
-        date: {
+        itemId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Item',
+            required: true
+        },
+        quantity: {
+            type: Number,
+            required: true,
+            default: 0
+        },
+        lastUpdated: {
             type: Date,
-            default: Date.now,
-        },
+            default: Date.now
+        }
     },
     {
         timestamps: true,
     }
 );
+
+// Compound index for unique item per branch
+inventorySchema.index({ branchId: 1, itemId: 1 }, { unique: true });
 
 module.exports = mongoose.model('Inventory', inventorySchema);

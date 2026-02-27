@@ -22,12 +22,14 @@ const userSchema = mongoose.Schema(
         },
         role: {
             type: String,
-            enum: ['owner', 'manager', 'outlet_manager', 'auditor'],
-            default: 'outlet_manager',
+            enum: ['admin', 'manager', 'employee'],
+            default: 'employee',
         },
-        outletId: {
-            type: String,
-            required: false,
+        branchId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Branch',
+            required: false, // null for admin
+            default: null,
         },
         status: {
             type: String,

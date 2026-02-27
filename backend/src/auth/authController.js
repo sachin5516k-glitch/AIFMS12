@@ -31,7 +31,7 @@ const loginUser = asyncHandler(async (req, res) => {
                     id: user._id,
                     name: user.name,
                     role: user.role,
-                    branchId: user.outletId,
+                    branchId: user.branchId,
                 }
             }
         });
@@ -46,7 +46,7 @@ const loginUser = asyncHandler(async (req, res) => {
 // @route   POST /api/auth/register
 // @access  Public (or Protected in future)
 const registerUser = asyncHandler(async (req, res) => {
-    const { name, email, password, role, outletId } = req.body;
+    const { name, email, password, role, branchId } = req.body;
 
     const userExists = await User.findOne({ email });
 
@@ -60,7 +60,7 @@ const registerUser = asyncHandler(async (req, res) => {
         email,
         password,
         role,
-        outletId,
+        branchId: role === 'admin' ? null : branchId,
     });
 
     if (user) {
@@ -73,7 +73,7 @@ const registerUser = asyncHandler(async (req, res) => {
                     id: user._id,
                     name: user.name,
                     role: user.role,
-                    branchId: user.outletId,
+                    branchId: user.branchId,
                 }
             }
         });

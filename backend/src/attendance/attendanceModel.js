@@ -7,8 +7,9 @@ const attendanceSchema = mongoose.Schema(
             ref: 'User',
             required: true,
         },
-        outletId: {
-            type: String,
+        branchId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Branch',
             required: true,
         },
         checkInTime: {
@@ -19,19 +20,9 @@ const attendanceSchema = mongoose.Schema(
             type: Date,
         },
         location: {
-            latitude: Number,
-            longitude: Number,
-            // In prod: GeoJSON
-        },
-        photoUrl: {
-            type: String,
-            required: true,
-        },
-        status: {
-            type: String,
-            enum: ['present', 'absent', 'late'], // logic for 'late' to be added
-            default: 'present',
-        },
+            lat: { type: Number, required: true },
+            lng: { type: Number, required: true }
+        }
     },
     {
         timestamps: true,

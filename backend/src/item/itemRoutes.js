@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { createFranchise, getFranchises } = require('./franchiseController');
+const {
+    createItem,
+    getItems,
+} = require('./itemController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
 router.route('/')
-    .post(protect, authorize('owner'), createFranchise)
-    .get(protect, getFranchises);
+    .post(protect, authorize('admin'), createItem)
+    .get(protect, getItems);
 
 module.exports = router;

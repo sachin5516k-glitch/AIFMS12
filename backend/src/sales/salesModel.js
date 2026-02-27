@@ -2,48 +2,43 @@ const mongoose = require('mongoose');
 
 const salesSchema = mongoose.Schema(
     {
-        outletId: {
-            type: String,
-            required: [true, 'Outlet ID is required'],
+        branchId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Branch',
+            required: [true, 'Branch ID is required'],
             index: true
         },
-        amount: {
-            type: Number,
-            required: [true, 'Sales amount is required'],
-            min: [1, 'Amount must be greater than 0']
+        itemId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Item',
+            required: [true, 'Item ID is required']
         },
-        date: {
-            type: Date,
-            default: Date.now,
+        quantitySold: {
+            type: Number,
+            required: [true, 'Quantity is required'],
+            min: [1, 'Quantity must be at least 1']
+        },
+        totalAmount: {
+            type: Number,
+            required: [true, 'Total amount is required'],
+            min: [0, 'Amount must be valid']
         },
         paymentMode: {
             type: String,
             enum: ['Cash', 'Card', 'UPI'],
             required: [true, 'Payment mode is required'],
         },
-        imageUrl: {
-            type: String,
-            required: false
-        },
-        fraudScore: {
-            type: Number,
-            default: 0,
-            min: 0,
-            max: 100
-        },
-        status: {
-            type: String,
-            enum: ['pending', 'approved', 'flagged'],
-            default: 'pending',
-        },
+        createdBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        }
     },
     {
         timestamps: true,
     }
 );
 
-// Compound Index: Optimizes queries by Outlet Date and prevents duplicate scenarios if unique was enforced (here just for perf)
-salesSchema.index({ outletId: 1, date: -1 });
-salesSchema.index({ fraudScore: -1 }); // Fast lookup for high fraud
+salesSchema.index({ branchId: 1, createdAt: -1 });
 
 module.exports = mongoose.model('Sales', salesSchema);
