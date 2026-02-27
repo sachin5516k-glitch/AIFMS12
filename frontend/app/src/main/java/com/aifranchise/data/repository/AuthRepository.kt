@@ -20,6 +20,7 @@ class AuthRepository @Inject constructor(
             val response = apiService.login(request)
             if (response.success) {
                 tokenManager.saveToken(response.data.token)
+                tokenManager.saveUser(response.data.user.name, response.data.user.role)
                 emit(ResultState.Success(response.data))
             } else {
                 emit(ResultState.Error(Exception(response.message)))

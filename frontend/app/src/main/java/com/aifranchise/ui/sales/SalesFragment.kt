@@ -23,7 +23,6 @@ class SalesFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: SalesViewModel by viewModels()
-    private var capturedImageUrl: String? = null // Placeholder for image logic
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,21 +36,13 @@ class SalesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnCapture.setOnClickListener {
-            // TODO: Implement CameraX or ImagePicker. 
-            // Mocking success for now to allow flow testing
-            capturedImageUrl = "mock_image_url_123"
-            binding.ivProof.setImageResource(R.drawable.ic_launcher_background) 
-            Toast.makeText(context, "Image Captured (Mock)", Toast.LENGTH_SHORT).show()
-        }
-
         binding.btnSubmit.setOnClickListener {
-            val amount = binding.etAmount.text.toString()
+            val quantity = binding.etQuantity.text.toString()
             val selectedId = binding.rgPaymentMode.checkedRadioButtonId
             val paymentMode = view.findViewById<RadioButton>(selectedId)?.text.toString()
+            val mockItemId = "item_001" // Mocking spinner selection for Phase 2
 
-            // Hardcoding outletId for phase 2 demo. In real app, get from User Prefs
-            viewModel.submitSales("outlet_001", amount, paymentMode, capturedImageUrl)
+            viewModel.submitSales("outlet_001", quantity, paymentMode, "")
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -79,9 +70,7 @@ class SalesFragment : Fragment() {
     }
 
     private fun resetForm() {
-        binding.etAmount.text?.clear()
-        capturedImageUrl = null
-        binding.ivProof.setImageResource(R.drawable.ic_launcher_foreground)
+        binding.etQuantity.text?.clear()
         viewModel.resetState()
     }
 

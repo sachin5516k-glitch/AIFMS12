@@ -14,12 +14,20 @@ class TokenManager @Inject constructor(@ApplicationContext private val context: 
         prefs.edit().putString("jwt_token", token).apply()
     }
 
+    fun saveUser(name: String, role: String) {
+        prefs.edit().putString("user_name", name).putString("user_role", role).apply()
+    }
+
     fun getToken(): String? {
         return prefs.getString("jwt_token", null)
     }
 
+    fun getUserName(): String? = prefs.getString("user_name", "User Name")
+    
+    fun getUserRole(): String? = prefs.getString("user_role", "Role")
+
     fun clearToken() {
-        prefs.edit().remove("jwt_token").apply()
+        prefs.edit().clear().apply()
     }
 
     fun forceLogout() {

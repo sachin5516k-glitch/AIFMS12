@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AI Franchise</string>
+    <string name="app_name">PSK Foods</string>
     <string name="login_title">Welcome Back</string>
     <string name="email_hint">Email Address</string>
     <string name="password_hint">Password</string>

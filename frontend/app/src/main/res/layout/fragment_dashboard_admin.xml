@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Admin Dashboard"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView android:id="@+id/tvTotalBranches" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Total Branches: --" android:textSize="18sp" android:layout_marginTop="8dp"/>
+    <TextView android:id="@+id/tvTotalSales" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Total Sales: $--" android:textSize="18sp" android:layout_marginTop="8dp"/>
+    <TextView android:id="@+id/tvProfit" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Profit per Branch: --%" android:textSize="18sp" android:layout_marginTop="8dp"/>
+    <TextView android:id="@+id/tvInventory" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Global Inventory Summary: --" android:textSize="18sp" android:layout_marginTop="8dp"/>
+    <TextView android:id="@+id/tvAttendance" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Global Attendance: --%" android:textSize="18sp" android:layout_marginTop="8dp"/>
+
+    <Button
+        android:id="@+id/btnAi"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="View AI Insights"
+        android:backgroundTint="#6200EE"
+        android:layout_marginTop="32dp"/>
+
+</LinearLayout>

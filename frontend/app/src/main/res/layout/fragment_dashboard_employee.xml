@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Employee Dashboard"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView android:id="@+id/tvTodaySales" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Today Sales: $--" android:textSize="18sp" android:layout_marginTop="8dp"/>
+    <TextView android:id="@+id/tvStockStatus" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Stock Status: --%" android:textSize="18sp" android:layout_marginTop="8dp"/>
+    <TextView android:id="@+id/tvAttendanceStatus" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Your Attendance Status: --" android:textSize="18sp" android:layout_marginTop="8dp"/>
+    <TextView android:id="@+id/tvBranchInfo" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Branch Info: --" android:textSize="18sp" android:layout_marginTop="8dp"/>
+
+</LinearLayout>

@@ -35,7 +35,6 @@ class AttendanceFragment : Fragment(), OnMapReadyCallback {
     private val binding get() = _binding!!
 
     private val viewModel: AttendanceViewModel by viewModels()
-    private var capturedImageUrl: String? = null
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var googleMap: GoogleMap? = null
@@ -67,13 +66,6 @@ class AttendanceFragment : Fragment(), OnMapReadyCallback {
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.mapPlaceholder) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
-
-        binding.btnCaptureSelfie.setOnClickListener {
-            // Mock Camera Logic
-            capturedImageUrl = "mock_selfie.jpg"
-            binding.ivSelfie.setImageResource(R.drawable.ic_launcher_background)
-            Toast.makeText(context, "Selfie Captured", Toast.LENGTH_SHORT).show()
-        }
 
         binding.btnCheckIn.setOnClickListener {
             submitAttendance(true)
