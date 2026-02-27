@@ -57,6 +57,9 @@ app.use('/api/items', require('./item/itemRoutes'));
 app.use('/api/sales', require('./sales/salesRoutes'));
 app.use('/api/inventory', require('./inventory/inventoryRoutes'));
 app.use('/api/attendance', require('./attendance/attendanceRoutes'));
+app.use('/api/notifications', require('./notification/notificationRoutes'));
+app.use('/api/transfers', require('./transfer/transferRoutes'));
+app.use('/api/dashboard', require('./dashboard/dashboardRoutes'));
 app.use('/api/ai', require('./ai/aiRoutes'));
 const reportRoutes = require('./reports/reportRoutes');
 const diagnosticRoutes = require('./routes/diagnosticsRoutes');
@@ -68,6 +71,9 @@ app.use('/api/logs', require('./routes/logRoutes')); // Crash Reporting & Logs
 if (process.env.NODE_ENV !== 'test') {
   const { startDailyJob } = require('./jobs/daily.job');
   startDailyJob();
+
+  const { startStockCronJobs } = require('./cron/stockCron');
+  startStockCronJobs();
 }
 
 app.get('/', (req, res) => {

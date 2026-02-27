@@ -20,6 +20,9 @@ const createBranch = asyncHandler(async (req, res) => {
     });
 });
 
+const Inventory = require('../inventory/inventoryModel');
+const Sales = require('../sales/salesModel');
+
 // @desc    Get branches
 // @route   GET /api/branches
 // @access  Private
@@ -29,12 +32,63 @@ const getBranches = asyncHandler(async (req, res) => {
         query = { _id: req.user.branchId };
     }
 
-    const branches = await Branch.find(query);
+    const branchesRaw = await Branch.find(query).lean();
+
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    // Compute health status dynamically for each branch
+    const branchesWithHealth = await Promise.all(branchesRaw.map(async (branch) => {
+        const inventories = await Inventory.find({ branchId: branch._id });
+        let lowestDaysRemaining = Infinity;
+
+        for (const inv of inventories) {
+            const salesData = await Sales.aggregate([
+                {
+                    $match: {
+                        branchId: branch._id,
+                        itemId: inv.itemId,
+                        createdAt: { $gte: sevenDaysAgo }
+                    }
+                },
+                { $group: { _id: null, totalSold: { $sum: "$quantitySold" } } }
+            ]);
+
+            const totalSales7Days = salesData.length > 0 ? salesData[0].totalSold : 0;
+            const avgDailySales = totalSales7Days / 7;
+
+            let daysRemaining = Infinity;
+            if (avgDailySales > 0) {
+                daysRemaining = inv.quantity / avgDailySales;
+            } else if (inv.quantity === 0) {
+                daysRemaining = 0;
+            }
+
+            if (daysRemaining < lowestDaysRemaining) {
+                lowestDaysRemaining = daysRemaining;
+            }
+        }
+
+        // Green = Healthy (>10 days)
+        // Yellow = Warning (between 3 and 10 days)
+        // Red = Critical (<3 days or 0 stock)
+        let healthColor = 'Green';
+        if (lowestDaysRemaining < 3) healthColor = 'Red';
+        else if (lowestDaysRemaining <= 10) healthColor = 'Yellow';
+        // If they have no items at all, default to Green or maybe Grey. Let's say Green.
+        if (inventories.length === 0) healthColor = 'Green';
+
+        return {
+            ...branch,
+            healthStatus: healthColor,
+            lowestDaysRemaining: lowestDaysRemaining === Infinity ? null : lowestDaysRemaining
+        };
+    }));
 
     res.status(200).json({
         success: true,
         message: 'Branches retrieved successfully',
-        data: branches,
+        data: branchesWithHealth,
     });
 });
 
