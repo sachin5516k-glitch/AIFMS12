@@ -35,13 +35,13 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Rate Limiting for Auth
+// Rate Limiting
 const limiter = require('express-rate-limit')({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per windowMs
   message: 'Too many requests from this IP, please try again later'
 });
-app.use('/api/auth', limiter);
+app.use('/api', limiter);
 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
@@ -65,6 +65,7 @@ const reportRoutes = require('./reports/reportRoutes');
 const diagnosticRoutes = require('./routes/diagnosticsRoutes');
 app.use('/api/admin', reportRoutes);
 app.use('/api/admin', diagnosticRoutes); // Mounts /api/admin/diagnostics
+app.use('/api/audit', require('./audit/auditRoutes'));
 app.use('/api/logs', require('./routes/logRoutes')); // Crash Reporting & Logs
 
 // Start Cron Jobs

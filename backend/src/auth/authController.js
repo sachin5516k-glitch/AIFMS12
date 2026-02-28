@@ -8,6 +8,8 @@ const generateToken = (id) => {
     });
 };
 
+const AuditLog = require('../audit/auditLogModel');
+
 // @desc    Auth user & get token
 // @route   POST /api/auth/login
 // @access  Public
@@ -22,6 +24,15 @@ const loginUser = asyncHandler(async (req, res) => {
 
     if (user && (await user.matchPassword(password))) {
         logger.info(`Login Success: ${email}`, { service: 'auth-service', userId: user._id });
+
+        await AuditLog.create({
+            userId: user._id,
+            action: 'USER_LOGIN_SUCCESS',
+            details: `User ${email} logged in.`,
+            ipAddress: req.ip,
+            userAgent: req.headers['user-agent']
+        });
+
         res.json({
             success: true,
             message: 'Login successful',
@@ -37,6 +48,15 @@ const loginUser = asyncHandler(async (req, res) => {
         });
     } else {
         logger.warn(`Login Failed: ${email}`, { service: 'auth-service', ip: req.ip });
+
+        await AuditLog.create({
+            userId: user ? user._id : null,
+            action: 'USER_LOGIN_FAILED',
+            details: `Failed login attempt for email: ${email}`,
+            ipAddress: req.ip,
+            userAgent: req.headers['user-agent']
+        });
+
         res.status(401);
         throw new Error('Invalid email or password');
     }
@@ -64,6 +84,14 @@ const registerUser = asyncHandler(async (req, res) => {
     });
 
     if (user) {
+        await AuditLog.create({
+            userId: user._id,
+            action: 'ROLE_CREATION',
+            details: `New account registered: ${email} with role ${role}. (Created by: ${req.user ? req.user.email : 'Public/Initial'})`,
+            ipAddress: req.ip,
+            userAgent: req.headers['user-agent']
+        });
+
         res.status(201).json({
             success: true,
             message: 'Registration successful',

@@ -14,6 +14,12 @@
             android:id="@+id/attendanceFragment"
             android:title="Staff Attendance" />
         <item
+            android:id="@+id/notificationsFragment"
+            android:title="Notifications" />
+        <item
+            android:id="@+id/transferFragment"
+            android:title="Stock Transfers" />
+        <item
             android:id="@+id/aiInsightsFragment"
             android:title="View AI Insights" />
     </group>

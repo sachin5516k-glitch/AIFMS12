@@ -79,6 +79,18 @@
         tools:layout="@layout/fragment_ai_insights"/>
 
     <fragment
+        android:id="@+id/notificationsFragment"
+        android:name="com.aifranchise.ui.notification.NotificationFragment"
+        android:label="Notifications"
+        tools:layout="@layout/fragment_notification"/>
+
+    <fragment
+        android:id="@+id/transferFragment"
+        android:name="com.aifranchise.ui.transfer.TransferFragment"
+        android:label="Stock Transfers"
+        tools:layout="@layout/fragment_transfer"/>
+
+    <fragment
         android:id="@+id/disputeFragment"
         android:name="com.aifranchise.ui.dispute.DisputeFragment"
         android:label="Raise Dispute"

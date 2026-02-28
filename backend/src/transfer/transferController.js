@@ -4,6 +4,7 @@ const StockTransferRecommendation = require('./stockTransferRecommendationModel'
 const StockTransferRequest = require('./stockTransferRequestModel');
 const Inventory = require('../inventory/inventoryModel');
 const Notification = require('../notification/notificationModel');
+const AuditLog = require('../audit/auditLogModel');
 
 // @desc    Get Transfer Recommendations for a branch
 // @route   GET /api/transfers/recommendations
@@ -90,6 +91,14 @@ const approveRecommendation = asyncHandler(async (req, res) => {
         await Notification.create([{ branchId: rec.toBranchId._id, title: 'Transfer Approved', message, type: 'TRANSFER_APPROVED' }], { session });
         await Notification.create([{ branchId: null, title: 'Transfer Approved', message, type: 'TRANSFER_APPROVED' }], { session });
 
+        await AuditLog.create([{
+            userId: req.user._id,
+            action: 'STOCK_TRANSFER_APPROVED',
+            details: `Approved transfer of ${rec.suggestedQuantity} ${rec.itemId.name} from ${rec.fromBranchId.name} to ${rec.toBranchId.name}.`,
+            ipAddress: req.ip,
+            userAgent: req.headers['user-agent']
+        }], { session });
+
         await session.commitTransaction();
         res.status(200).json({ success: true, data: rec, message: 'Transfer approved successfully' });
     } catch (error) {
@@ -137,6 +146,14 @@ const rejectRecommendation = asyncHandler(async (req, res) => {
     await Notification.create({ branchId: rec.fromBranchId._id, title: 'Transfer Rejected', message, type: 'TRANSFER_REJECTED' });
     await Notification.create({ branchId: rec.toBranchId._id, title: 'Transfer Rejected', message, type: 'TRANSFER_REJECTED' });
 
+    await AuditLog.create({
+        userId: req.user._id,
+        action: 'STOCK_TRANSFER_REJECTED',
+        details: `Rejected transfer of ${rec.itemId.name} from ${rec.fromBranchId.name} to ${rec.toBranchId.name}. Reason: ${reason || 'None'}`,
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent']
+    });
+
     res.status(200).json({ success: true, data: rec, message: 'Transfer rejected' });
 });
 
@@ -169,6 +186,14 @@ const createManualRequest = asyncHandler(async (req, res) => {
 
     await Notification.create({ branchId: targetBranchId, title: 'New Stock Request', message, type: 'TRANSFER_REQUEST' });
     await Notification.create({ branchId: null, title: 'New Stock Request', message, type: 'TRANSFER_REQUEST' });
+
+    await AuditLog.create({
+        userId: req.user._id,
+        action: 'MANUAL_STOCK_REQUEST_CREATED',
+        details: `Requested ${quantity} ${populatedReq.itemId.name} from ${targetBranchId} for ${requestedByBranchId}.`,
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent']
+    });
 
     res.status(201).json({ success: true, data: request });
 });
@@ -246,6 +271,14 @@ const approveRequest = asyncHandler(async (req, res) => {
         await Notification.create([{ branchId: transferReq.requestedByBranchId._id, title: 'Request Approved', message, type: 'TRANSFER_APPROVED' }], { session });
         await Notification.create([{ branchId: null, title: 'Request Approved', message, type: 'TRANSFER_APPROVED' }], { session });
 
+        await AuditLog.create([{
+            userId: req.user._id,
+            action: 'MANUAL_STOCK_REQUEST_APPROVED',
+            details: `Approved manual request of ${transferReq.quantity} ${transferReq.itemId.name} from ${transferReq.targetBranchId.name} to ${transferReq.requestedByBranchId.name}.`,
+            ipAddress: req.ip,
+            userAgent: req.headers['user-agent']
+        }], { session });
+
         await session.commitTransaction();
         res.status(200).json({ success: true, data: transferReq, message: 'Request approved successfully' });
     } catch (error) {
@@ -285,6 +318,14 @@ const rejectRequest = asyncHandler(async (req, res) => {
 
     const message = `Your request for ${transferReq.quantity} ${transferReq.itemId.name} was REJECTED by ${transferReq.targetBranchId.name}.`;
     await Notification.create({ branchId: transferReq.requestedByBranchId._id, title: 'Request Rejected', message, type: 'TRANSFER_REJECTED' });
+
+    await AuditLog.create({
+        userId: req.user._id,
+        action: 'MANUAL_STOCK_REQUEST_REJECTED',
+        details: `Rejected manual request of ${transferReq.quantity} ${transferReq.itemId.name} from ${transferReq.targetBranchId.name} to ${transferReq.requestedByBranchId.name}.`,
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent']
+    });
 
     res.status(200).json({ success: true, data: transferReq, message: 'Request rejected' });
 });

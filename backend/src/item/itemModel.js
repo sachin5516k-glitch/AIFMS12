@@ -16,6 +16,22 @@ const itemSchema = mongoose.Schema(
             required: true,
             min: 0
         },
+        purchaseCost: {
+            type: Number,
+            required: true,
+            min: 0,
+            default: 0
+        },
+        sellingPrice: {
+            type: Number,
+            required: true,
+            min: 0,
+            default: 0
+        },
+        marginPercentage: {
+            type: Number,
+            default: 0
+        },
         createdBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',

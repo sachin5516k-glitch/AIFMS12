@@ -33,4 +33,33 @@ const getSalesReport = asyncHandler(async (req, res) => {
     res.json(report);
 });
 
-module.exports = { getSalesReport };
+// @desc    Export Sales Data as CSV
+// @route   GET /api/reports/export/sales
+// @access  Private/Admin
+const exportSalesCsv = asyncHandler(async (req, res) => {
+    // Only Admin can export entire system data generally,
+    // but the system has role checks in middleware protecting this route.
+    const sales = await Sales.find({})
+        .populate('branchId', 'name')
+        .populate('itemId', 'name purchaseCost sellingPrice');
+
+    let csvContent = "Transaction ID,Branch,Item,Quantity,Total Amount,Payment Mode,Date\n";
+
+    for (const sale of sales) {
+        const branchName = sale.branchId ? sale.branchId.name : "Unknown Branch";
+        const itemName = sale.itemId ? sale.itemId.name : "Unknown Item";
+        const txId = sale._id.toString();
+        const qty = sale.quantitySold;
+        const amt = sale.totalAmount;
+        const mode = sale.paymentMode;
+        const date = new Date(sale.createdAt).toISOString();
+
+        csvContent += `"${txId}","${branchName}","${itemName}",${qty},${amt},"${mode}","${date}"\n`;
+    }
+
+    res.header('Content-Type', 'text/csv');
+    res.attachment('sales_export.csv');
+    return res.status(200).send(csvContent);
+});
+
+module.exports = { getSalesReport, exportSalesCsv };

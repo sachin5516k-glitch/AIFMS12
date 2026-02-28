@@ -23,6 +23,11 @@ const salesSchema = mongoose.Schema(
             required: [true, 'Total amount is required'],
             min: [0, 'Amount must be valid']
         },
+        sellingPrice: {
+            type: Number,
+            required: [true, 'Selling price snapshot is required'],
+            min: [0, 'Selling price must be valid']
+        },
         paymentMode: {
             type: String,
             enum: ['Cash', 'Card', 'UPI'],
@@ -39,6 +44,6 @@ const salesSchema = mongoose.Schema(
     }
 );
 
-salesSchema.index({ branchId: 1, createdAt: -1 });
+salesSchema.index({ branchId: 1, itemId: 1, createdAt: -1 });
 
 module.exports = mongoose.model('Sales', salesSchema);

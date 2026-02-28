@@ -1,6 +1,8 @@
 const asyncHandler = require('express-async-handler');
 const Inventory = require('./inventoryModel');
 
+const AuditLog = require('../audit/auditLogModel');
+
 const submitInventory = asyncHandler(async (req, res) => {
     const branchId = req.user.role === 'admin' ? req.body.branchId : req.user.branchId;
     const { items } = req.body; // array of { itemId, quantityAdded }
@@ -11,6 +13,8 @@ const submitInventory = asyncHandler(async (req, res) => {
     }
 
     const updatedItems = [];
+    let auditDetails = `Inventory change at branch ${branchId}: `;
+
     for (const item of items) {
         let inv = await Inventory.findOne({ branchId, itemId: item.itemId });
         if (!inv) {
@@ -20,13 +24,23 @@ const submitInventory = asyncHandler(async (req, res) => {
                 itemId: item.itemId,
                 quantity: item.quantityAdded
             });
+            auditDetails += `[New: ${item.itemId} +${item.quantityAdded}] `;
         } else {
             inv.quantity += item.quantityAdded;
             inv.lastUpdated = new Date();
             await inv.save();
+            auditDetails += `[Add: ${item.itemId} +${item.quantityAdded}] `;
         }
         updatedItems.push(inv);
     }
+
+    await AuditLog.create({
+        userId: req.user._id,
+        action: 'INVENTORY_CHANGE',
+        details: auditDetails,
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent']
+    });
 
     res.status(201).json({
         success: true,
