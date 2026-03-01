@@ -18,7 +18,8 @@ const logger = require('../utils/logger');
 // ...
 
 const loginUser = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+    if (email) email = email.toLowerCase();
 
     const user = await User.findOne({ email });
 
@@ -66,7 +67,8 @@ const loginUser = asyncHandler(async (req, res) => {
 // @route   POST /api/auth/register
 // @access  Public (or Protected in future)
 const registerUser = asyncHandler(async (req, res) => {
-    const { name, email, password, role, branchId } = req.body;
+    let { name, email, password, role, branchId } = req.body;
+    if (email) email = email.toLowerCase();
 
     const userExists = await User.findOne({ email });
 

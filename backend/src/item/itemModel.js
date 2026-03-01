@@ -43,4 +43,6 @@ const itemSchema = mongoose.Schema(
     }
 );
 
+itemSchema.index({ createdAt: -1 });
+
 module.exports = mongoose.model('Item', itemSchema);

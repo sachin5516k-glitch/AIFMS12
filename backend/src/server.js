@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const morgan = require('morgan');
+const compression = require('compression');
 const connectDB = require('./config/db');
 const { errorHandler } = require('./middleware/errorMiddleware');
 
@@ -19,12 +20,15 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(require('helmet')()); // Security Headers
+app.use(compression()); // GZIP Compression
 const { inputSanitizer } = require('./middleware/securityMiddleware');
 app.use(inputSanitizer);
 app.use(require('./middleware/requestLogger')); // Structured Request Logging
 app.use(cors());
 
 // Health Check Endpoint
+app.get('/ping', (req, res) => res.status(200).send('pong'));
+
 app.get('/health', (req, res) => {
   const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
   res.status(200).json({
