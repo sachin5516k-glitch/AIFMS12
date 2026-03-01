@@ -19,9 +19,9 @@ router.get('/insights/:outletId', protect, async (req, res) => {
         const { riskLevel, factors } = await predictFailureRisk(outletId);
 
         // 3. Fraud Probability (Avg of recent fraud scores)
-        // Aggregation to get average fraud score of last 50 sales
+        const matchStage = outletId === 'global' ? {} : { outletId };
         const fraudStats = await Sales.aggregate([
-            { $match: { outletId } },
+            { $match: matchStage },
             { $sort: { createdAt: -1 } },
             { $limit: 100 },
             { $group: { _id: null, avgFraud: { $avg: "$fraudScore" } } }

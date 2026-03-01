@@ -13,10 +13,8 @@ const calculateHealthScore = async (outletId) => {
 
     // 1. Sales Consistency (Check if sales reported yesterday)
     const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const salesYesterday = await Sales.countDocuments({
-        outletId,
-        createdAt: { $gt: yesterday }
-    });
+    const query = outletId === 'global' ? { createdAt: { $gt: yesterday } } : { outletId, createdAt: { $gt: yesterday } };
+    const salesYesterday = await Sales.countDocuments(query);
 
     if (salesYesterday === 0) {
         healthScore -= 20;
@@ -24,10 +22,7 @@ const calculateHealthScore = async (outletId) => {
     }
 
     // 2. Attendance Compliance
-    const attendanceCount = await Attendance.countDocuments({
-        outletId,
-        createdAt: { $gt: yesterday }
-    });
+    const attendanceCount = await Attendance.countDocuments(query);
 
     if (attendanceCount === 0) {
         healthScore -= 20;
