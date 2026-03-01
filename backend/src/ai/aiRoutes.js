@@ -30,10 +30,13 @@ router.get('/insights/:outletId', protect, async (req, res) => {
         const fraudProbability = fraudStats.length > 0 ? Math.round(fraudStats[0].avgFraud) : 0;
 
         res.json({
-            healthScore,
-            fraudProbability,
-            failureRisk: riskLevel,
-            topFactors: factors
+            success: true,
+            data: {
+                healthScore,
+                fraudProbability,
+                failureRisk: riskLevel,
+                topFactors: factors
+            }
         });
 
     } catch (error) {

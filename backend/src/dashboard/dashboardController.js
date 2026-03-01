@@ -194,6 +194,9 @@ const getAdminDashboard = asyncHandler(async (req, res) => {
     }
 
     const payload = {
+        profitability: { revenue: globalRevenue, profitPercentage: globalProfitPercentage.toFixed(2) },
+        incomingTransfers: pendingRecs + pendingReqs,
+        outgoingTransfers: 0,
         financials: {
             globalRevenue,
             globalProfitPercentage: globalProfitPercentage.toFixed(2),
