@@ -37,53 +37,67 @@ const getManagerDashboard = asyncHandler(async (req, res) => {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(today.getDate() - 7);
 
-    // 1. Profit & Loss (Trigger calculation for up-to-date daily P&L if not found)
-    let financials = await ProfitLossService.calculateBranchFinancials(branchId, thirtyDaysAgo, today, 'MONTHLY');
+    // Parallelize all independent database queries for maximum performance
+    const [
+        financials,
+        revenueTrendDocs,
+        forecast,
+        allBranchInventories,
+        salesCount,
+        attendanceCount,
+        incomingRecs,
+        incomingReqs,
+        outgoingRecs,
+        outgoingReqs,
+        historyRecs,
+        historyReqs,
+        branchSalesSummary
+    ] = await Promise.all([
+        ProfitLossService.calculateBranchFinancials(branchId, thirtyDaysAgo, today, 'MONTHLY'),
+        BranchFinancials.find({ branchId, period: 'DAILY', date: { $gte: thirtyDaysAgo } }).sort({ date: 1 }),
+        ForecastService.getBranchForecast(branchId),
+        Inventory.find({ branchId }).populate('itemId'),
+        Sales.countDocuments({ branchId, createdAt: { $gte: thirtyDaysAgo } }),
+        Attendance.countDocuments({ branchId, checkInTime: { $gte: thirtyDaysAgo } }),
+        StockTransferRecommendation.countDocuments({ toBranchId: branchId, status: 'PENDING' }),
+        StockTransferRequest.countDocuments({ requestedByBranchId: branchId, status: 'PENDING' }),
+        StockTransferRecommendation.countDocuments({ fromBranchId: branchId, status: 'PENDING' }),
+        StockTransferRequest.countDocuments({ targetBranchId: branchId, status: 'PENDING' }),
+        StockTransferRecommendation.find({
+            $or: [{ fromBranchId: branchId }, { toBranchId: branchId }], status: { $ne: 'PENDING' }
+        }).populate('itemId fromBranchId toBranchId').sort({ updatedAt: -1 }).limit(5),
+        StockTransferRequest.find({
+            $or: [{ requestedByBranchId: branchId }, { targetBranchId: branchId }], status: { $ne: 'PENDING' }
+        }).populate('itemId requestedByBranchId targetBranchId').sort({ updatedAt: -1 }).limit(5),
+        Sales.aggregate([
+            { $match: { branchId, createdAt: { $gte: sevenDaysAgo } } },
+            { $group: { _id: "$itemId", totalSold: { $sum: "$quantitySold" } } }
+        ])
+    ]);
 
-    // 2. Revenue Trend (last 30 days) list
-    const revenueTrendDocs = await BranchFinancials.find({ branchId, period: 'DAILY', date: { $gte: thirtyDaysAgo } }).sort({ date: 1 });
+    // 2. Revenue Trend 
     const revenueTrend = revenueTrendDocs.map(f => ({ date: f.date, revenue: f.revenue }));
 
-    // 3. Forecasting (Next 7 days & Top demands)
-    const forecast = await ForecastService.getBranchForecast(branchId);
-
     // 4. Low margin items
-    const allBranchInventories = await Inventory.find({ branchId }).populate('itemId');
     const lowMarginItems = allBranchInventories
-        .filter(inv => inv.itemId.marginPercentage < 20) // assumed <20% is low
+        .filter(inv => inv.itemId && inv.itemId.marginPercentage < 20)
         .map(inv => ({ item: inv.itemId.name, margin: inv.itemId.marginPercentage }));
 
-    // 5. Employee productivity % (Attendance vs Sales actions)
-    // For simplicity, productivity = sum(sales entries) / sum(attendance checkins) over last 30 days
-    const salesCount = await Sales.countDocuments({ branchId, createdAt: { $gte: thirtyDaysAgo } });
-    const attendanceCount = await Attendance.countDocuments({ branchId, checkInTime: { $gte: thirtyDaysAgo } });
+    // 5. Employee productivity % 
     const productivityPercentage = attendanceCount > 0 ? ((salesCount / attendanceCount) * 100).toFixed(2) : 0;
 
-    // 6. Incoming / Outgoing Transfers
-    const incomingRecs = await StockTransferRecommendation.countDocuments({ toBranchId: branchId, status: 'PENDING' });
-    const incomingReqs = await StockTransferRequest.countDocuments({ requestedByBranchId: branchId, status: 'PENDING' });
-    const outgoingRecs = await StockTransferRecommendation.countDocuments({ fromBranchId: branchId, status: 'PENDING' });
-    const outgoingReqs = await StockTransferRequest.countDocuments({ targetBranchId: branchId, status: 'PENDING' });
-
     // 7. Transfer History
-    const historyRecs = await StockTransferRecommendation.find({
-        $or: [{ fromBranchId: branchId }, { toBranchId: branchId }], status: { $ne: 'PENDING' }
-    }).populate('itemId fromBranchId toBranchId').sort({ updatedAt: -1 }).limit(5);
-
-    const historyReqs = await StockTransferRequest.find({
-        $or: [{ requestedByBranchId: branchId }, { targetBranchId: branchId }], status: { $ne: 'PENDING' }
-    }).populate('itemId requestedByBranchId targetBranchId').sort({ updatedAt: -1 }).limit(5);
-
     const transferHistory = [...historyRecs, ...historyReqs].sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 5);
 
-    // 8. Low Stock
+    // 8. Low Stock (Aggregated directly inside Javascript in 0(n) without N+1 queries)
+    const salesMap = {};
+    branchSalesSummary.forEach(s => { salesMap[s._id.toString()] = s.totalSold; });
+
     const lowStockItems = [];
     for (const inv of allBranchInventories) {
-        const salesData = await Sales.aggregate([
-            { $match: { branchId, itemId: inv.itemId._id, createdAt: { $gte: sevenDaysAgo } } },
-            { $group: { _id: null, totalSold: { $sum: "$quantitySold" } } }
-        ]);
-        const avgDailySales = salesData.length > 0 ? (salesData[0].totalSold / 7) : 0;
+        if (!inv.itemId) continue;
+        const totalSold = salesMap[inv.itemId._id.toString()] || 0;
+        const avgDailySales = totalSold / 7;
         let daysRemaining = avgDailySales > 0 ? inv.quantity / avgDailySales : (inv.quantity === 0 ? 0 : Infinity);
         if (daysRemaining < 3) {
             lowStockItems.push({ item: inv.itemId.name, stock: inv.quantity, daysRemaining: daysRemaining === Infinity ? null : daysRemaining.toFixed(1) });
@@ -127,11 +141,41 @@ const getAdminDashboard = asyncHandler(async (req, res) => {
     let globalCogs = 0;
     const branchStats = [];
 
-    for (const b of branches) {
+    const finPromises = branches.map(async b => {
         const fin = await ProfitLossService.calculateBranchFinancials(b._id, thirtyDaysAgo, new Date(), 'MONTHLY');
-        globalRevenue += fin.revenue;
-        globalCogs += fin.cogs;
-        branchStats.push({ branchName: b.name, revenue: fin.revenue, profitPercentage: fin.profitPercentage });
+        return {
+            branchName: b.name,
+            revenue: fin.revenue,
+            cogs: fin.cogs,
+            profitPercentage: fin.profitPercentage
+        };
+    });
+
+    const [
+        branchFinancialsRes,
+        mostSold,
+        lowMarginAlerts,
+        totalCheckins,
+        pendingRecs,
+        pendingReqs
+    ] = await Promise.all([
+        Promise.all(finPromises),
+        Sales.aggregate([
+            { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+            { $group: { _id: "$itemId", totalQty: { $sum: "$quantitySold" } } },
+            { $sort: { totalQty: -1 } },
+            { $limit: 1 }
+        ]),
+        Item.find({ marginPercentage: { $lt: 20 } }).select('name marginPercentage'),
+        Attendance.countDocuments({ checkInTime: { $gte: thirtyDaysAgo } }),
+        StockTransferRecommendation.countDocuments({ status: 'PENDING' }),
+        StockTransferRequest.countDocuments({ status: 'PENDING' })
+    ]);
+
+    for (const f of branchFinancialsRes) {
+        globalRevenue += f.revenue;
+        globalCogs += f.cogs;
+        branchStats.push({ branchName: f.branchName, revenue: f.revenue, profitPercentage: f.profitPercentage });
     }
 
     const globalGrossProfit = globalRevenue - globalCogs;
@@ -143,27 +187,11 @@ const getAdminDashboard = asyncHandler(async (req, res) => {
     const leastProfitableBranch = branchStats.length > 0 ? branchStats[branchStats.length - 1] : null;
 
     // 2. Most Sold Item Globally
-    const mostSold = await Sales.aggregate([
-        { $match: { createdAt: { $gte: thirtyDaysAgo } } },
-        { $group: { _id: "$itemId", totalQty: { $sum: "$quantitySold" } } },
-        { $sort: { totalQty: -1 } },
-        { $limit: 1 }
-    ]);
     let mostSoldItemName = "None";
     if (mostSold.length > 0) {
         const itm = await Item.findById(mostSold[0]._id);
         if (itm) mostSoldItemName = itm.name;
     }
-
-    // 3. Low Margin Alert
-    const lowMarginAlerts = await Item.find({ marginPercentage: { $lt: 20 } }).select('name marginPercentage');
-
-    // 4. Attendance Performance (Total checkins vs Branches)
-    const totalCheckins = await Attendance.countDocuments({ checkInTime: { $gte: thirtyDaysAgo } });
-
-    // 5. Transfer Analytics
-    const pendingRecs = await StockTransferRecommendation.countDocuments({ status: 'PENDING' });
-    const pendingReqs = await StockTransferRequest.countDocuments({ status: 'PENDING' });
 
     const payload = {
         financials: {

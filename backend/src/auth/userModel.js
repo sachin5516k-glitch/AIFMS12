@@ -56,4 +56,8 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
 
+// Indexes for query performance
+userSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ branchId: 1 });
+
 module.exports = mongoose.model('User', userSchema);

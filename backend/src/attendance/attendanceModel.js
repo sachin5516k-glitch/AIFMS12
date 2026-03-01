@@ -29,4 +29,7 @@ const attendanceSchema = mongoose.Schema(
     }
 );
 
+// Indexes for query performance
+attendanceSchema.index({ branchId: 1, userId: 1 });
+
 module.exports = mongoose.model('Attendance', attendanceSchema);
