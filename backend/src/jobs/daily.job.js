@@ -1,5 +1,5 @@
 const cron = require('node-cron');
-const Franchise = require('../franchise/franchiseModel'); // Assuming we iterate outlets from franchises or separate Outlet model
+const Branch = require('../branch/branchModel'); // Assuming we iterate outlets from franchises or separate Outlet model
 const { checkCompliance } = require('../compliance/compliance.engine');
 const { calculateHealthScore } = require('../ai/health.engine');
 
