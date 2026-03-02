@@ -55,9 +55,10 @@ class TransferFragment : Fragment() {
                     is ResultState.Success -> {
                         branchList = state.data
                         val names = branchList.map { it.name }
-                        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, names)
-                        binding.spFromBranch.adapter = adapter
-                        binding.spToBranch.adapter = adapter
+                        val fromAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, names)
+                        val toAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, names)
+                        binding.spFromBranch.adapter = fromAdapter
+                        binding.spToBranch.adapter = toAdapter
                     }
                     else -> {}
                 }
@@ -69,7 +70,7 @@ class TransferFragment : Fragment() {
                 when (state) {
                     is ResultState.Success -> {
                         itemList = state.data
-                        val names = itemList.map { it.name }
+                        val names = itemList.map { it.displayName() }
                         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, names)
                         binding.spItem.adapter = adapter
                     }
@@ -135,7 +136,7 @@ class TransferFragment : Fragment() {
 
         val fromBranchId = branchList[fromIdx].id
         val toBranchId = branchList[toIdx].id
-        val itemId = itemList[itemIdx].id
+        val itemId = itemList[itemIdx].actualItemId()
 
         viewModel.submitManualTransfer(fromBranchId, toBranchId, itemId, quantity)
     }

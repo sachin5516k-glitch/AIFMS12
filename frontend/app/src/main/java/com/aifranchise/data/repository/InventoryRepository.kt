@@ -3,7 +3,6 @@ package com.aifranchise.data.repository
 import com.aifranchise.data.remote.ApiService
 import com.aifranchise.data.remote.InventoryItem
 import com.aifranchise.data.remote.InventoryRequest
-import com.aifranchise.data.remote.InventoryResponse
 import com.aifranchise.data.remote.ResultState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -28,7 +27,7 @@ class InventoryRepository @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
-    suspend fun submitInventory(request: InventoryRequest): Flow<ResultState<InventoryResponse>> = flow {
+    suspend fun submitInventory(request: InventoryRequest): Flow<ResultState<List<InventoryItem>>> = flow {
         emit(ResultState.Loading)
         try {
             val response = apiService.submitInventory(request)

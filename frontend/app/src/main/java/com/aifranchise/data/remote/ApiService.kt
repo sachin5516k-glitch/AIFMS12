@@ -37,7 +37,7 @@ interface ApiService {
     suspend fun getBranchInventoryItems(@retrofit2.http.Query("branchId") branchId: String): ApiResponse<List<InventoryItem>>
     
     @POST("inventory/submit")
-    suspend fun submitInventory(@Body request: InventoryRequest): ApiResponse<InventoryResponse>
+    suspend fun submitInventory(@Body request: InventoryRequest): ApiResponse<List<InventoryItem>>
 
     // Attendance
     @POST("attendance/checkin")
@@ -177,9 +177,7 @@ data class InventoryRequest(
 )
 data class InventoryUpdateItem(val itemId: String, val quantityAdded: Int)
 
-data class InventoryResponse(
-    val message: String? = null
-)
+
 
 // Attendance
 data class AttendanceRequest(
