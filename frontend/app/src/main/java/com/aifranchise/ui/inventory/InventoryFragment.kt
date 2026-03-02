@@ -51,7 +51,7 @@ class InventoryFragment : Fragment() {
         }
 
         binding.btnSubmitInventory.setOnClickListener {
-            viewModel.submitInventory("outlet_001", updates.values.toList())
+            viewModel.submitInventory("", updates.values.toList())
         }
 
         binding.btnSaveModal.setOnClickListener {

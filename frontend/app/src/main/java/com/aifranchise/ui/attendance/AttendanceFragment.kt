@@ -190,8 +190,8 @@ class AttendanceFragment : Fragment() {
             Toast.makeText(context, "Waiting for location...", Toast.LENGTH_SHORT).show()
             return
         }
-        val imageUrl = if (isCheckIn) "mock_selfie_url.jpg" else ""
-        viewModel.markAttendance(isCheckIn, "user_123", "outlet_001", currentLat, currentLng, imageUrl)
+        val imageUrl = if (isCheckIn) "selfie_capture" else ""
+        viewModel.markAttendance(isCheckIn, "", "", currentLat, currentLng, imageUrl)
     }
 
     override fun onResume() {

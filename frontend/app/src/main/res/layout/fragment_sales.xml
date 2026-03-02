@@ -1,201 +1,190 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:background="?android:windowBackground">
+    android:background="?android:windowBackground"
+    android:clipToPadding="false">
 
-    <!-- Title and Real-Time Total Header -->
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Record Sale"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:textColor="?attr/colorPrimary"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
-
-    <TextView
-        android:id="@+id/tvLiveTotal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="₹12.00"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:textColor="?attr/colorSecondaryVariant"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <!-- Pseudo Item Selection Cards (Horizontal Scroll) -->
-    <HorizontalScrollView
-        android:id="@+id/hsvItems"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:scrollbars="none"
-        android:clipToPadding="false"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle">
-        
-        <LinearLayout
+        android:padding="16dp">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:text="Record Sale"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="?attr/colorPrimary"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+            android:id="@+id/tvLiveTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="₹0.00"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="?attr/colorSecondaryVariant"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- Select Item Label -->
+        <TextView
+            android:id="@+id/tvSelectItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Item"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <!-- Loading indicator for items -->
+        <ProgressBar
+            android:id="@+id/pbItems"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/tvSelectItem"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <TextView
+            android:id="@+id/tvItemsError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Unable to load items"
+            android:textColor="#DC2626"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/tvSelectItem"/>
+
+        <!-- Dynamic Item Selection (Horizontal RecyclerView) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvItems"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:clipToPadding="false"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/tvSelectItem"/>
+
+        <!-- Quantity Stepper UI -->
+        <LinearLayout
+            android:id="@+id/llStepper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toBottomOf="@id/rvItems">
             
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="140dp"
-                android:layout_height="180dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                android:layout_marginEnd="16dp"
-                app:strokeColor="?attr/colorPrimaryVariant"
-                app:strokeWidth="2dp"> <!-- Simulating selected state -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="8dp">
-                    <ImageView android:layout_width="80dp" android:layout_height="80dp" android:src="@drawable/img_food_burger" android:scaleType="centerCrop"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Burger Combo" android:textStyle="bold" android:layout_marginTop="8dp" android:gravity="center"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="₹12.00" android:textColor="?attr/colorPrimary" android:textStyle="bold" android:layout_marginTop="4dp"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="140dp"
-                android:layout_height="180dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                android:layout_marginEnd="16dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="8dp">
-                    <ImageView android:layout_width="80dp" android:layout_height="80dp" android:src="@drawable/img_food_pizza" android:scaleType="centerCrop"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Large Pizza" android:textStyle="bold" android:layout_marginTop="8dp" android:gravity="center"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="₹18.00" android:textStyle="bold" android:layout_marginTop="4dp"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Spinner legacy mapping for logic compatibility -->
-            <Spinner
-                android:id="@+id/spItem"
-                android:layout_width="1dp"
-                android:layout_height="1dp"
-                android:visibility="invisible"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnMinus"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:text="-"
+                android:textSize="24sp"
+                app:cornerRadius="30dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+                
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etQuantity"
+                android:layout_width="100dp"
+                android:layout_height="60dp"
+                android:text="1"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:inputType="number"
+                android:background="@null"
+                android:layout_marginHorizontal="16dp"/>
+                
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPlus"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:text="+"
+                android:textSize="24sp"
+                app:cornerRadius="30dp"
+                android:backgroundTint="?attr/colorPrimary"/>
                 
         </LinearLayout>
-    </HorizontalScrollView>
 
-    <!-- Quantity Stepper UI -->
-    <LinearLayout
-        android:id="@+id/llStepper"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginTop="32dp"
-        app:layout_constraintTop_toBottomOf="@id/hsvItems">
-        
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnMinus"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:text="-"
-            android:textSize="24sp"
-            app:cornerRadius="30dp"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
-            
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etQuantity"
-            android:layout_width="100dp"
-            android:layout_height="60dp"
-            android:text="1"
-            android:textSize="24sp"
+        <TextView
+            android:id="@+id/tvPaymentTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Payment Method"
             android:textStyle="bold"
-            android:gravity="center"
-            android:inputType="number"
-            android:background="@null"
-            android:layout_marginHorizontal="16dp"/>
+            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toBottomOf="@id/llStepper"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <RadioGroup
+            android:id="@+id/rgPaymentMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp"
+            app:layout_constraintTop_toBottomOf="@id/tvPaymentTitle">
+
+            <RadioButton
+                android:id="@+id/rbCash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cash"
+                android:checked="true"
+                android:buttonTint="?attr/colorPrimary"/>
             
+            <RadioButton
+                android:id="@+id/rbCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Card"
+                android:layout_marginStart="24dp"
+                android:buttonTint="?attr/colorPrimary"/>
+                
+            <RadioButton
+                android:id="@+id/rbUpi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="UPI"
+                android:layout_marginStart="24dp"
+                android:buttonTint="?attr/colorPrimary"/>
+        </RadioGroup>
+
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnPlus"
-            android:layout_width="60dp"
+            android:id="@+id/btnSubmit"
+            android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:text="+"
-            android:textSize="24sp"
-            app:cornerRadius="30dp"
-            android:backgroundTint="?attr/colorPrimary"/>
-            
-    </LinearLayout>
+            android:text="Submit Sale"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:cornerRadius="16dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintTop_toBottomOf="@id/rgPaymentMode"/>
 
-    <TextView
-        android:id="@+id/tvPaymentTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Payment Method"
-        android:textStyle="bold"
-        android:layout_marginTop="32dp"
-        app:layout_constraintTop_toBottomOf="@id/llStepper"
-        app:layout_constraintStart_toStartOf="parent"/>
-
-    <RadioGroup
-        android:id="@+id/rgPaymentMode"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/tvPaymentTitle">
-
-        <RadioButton
-            android:id="@+id/rbCash"
+        <ProgressBar
+            android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cash"
-            android:checked="true"
-            android:buttonTint="?attr/colorPrimary"/>
-        
-        <RadioButton
-            android:id="@+id/rbCard"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Card"
-            android:layout_marginStart="24dp"
-            android:buttonTint="?attr/colorPrimary"/>
-            
-        <RadioButton
-            android:id="@+id/rbUpi"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="UPI"
-            android:layout_marginStart="24dp"
-            android:buttonTint="?attr/colorPrimary"/>
-    </RadioGroup>
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnSubmit"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="Submit Report"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:cornerRadius="16dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"/>
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

@@ -25,6 +25,10 @@ interface ApiService {
     @POST("sales/submit")
     suspend fun submitSales(@Body request: SalesRequest): ApiResponse<SalesResponse>
 
+    // Items
+    @GET("items")
+    suspend fun getItems(): ApiResponse<List<ItemDto>>
+
     // Inventory
     @GET("inventory/items")
     suspend fun getInventoryItems(): ApiResponse<List<InventoryItem>>
@@ -134,14 +138,22 @@ data class AddBranchRequest(
 
 // Sales
 data class SalesRequest(
-    val outletId: String,
-    val amount: Double,
+    val itemId: String,
+    val quantitySold: Int,
     val paymentMode: String
 )
 data class SalesResponse(
-    @SerializedName("_id") val id: String, 
-    val status: String, 
-    val fraudScore: Int
+    @SerializedName("_id") val id: String,
+    val totalAmount: Double? = null,
+    val quantitySold: Int? = null
+)
+
+// Items
+data class ItemDto(
+    @SerializedName("_id") val id: String,
+    val name: String,
+    val category: String? = null,
+    val unitPrice: Double
 )
 
 // Inventory

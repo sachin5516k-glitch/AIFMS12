@@ -27,6 +27,7 @@ class LoginFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: AuthViewModel by viewModels()
+    @javax.inject.Inject lateinit var apiService: com.aifranchise.data.remote.ApiService
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,6 +40,11 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Second warmup ping — in case splash timeout wasn't enough
+        viewLifecycleOwner.lifecycleScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            try { apiService.pingServer() } catch (_: Exception) {}
+        }
 
         binding.btnLogin.setOnClickListener {
             val email = binding.etEmail.text.toString().trim()
