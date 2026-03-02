@@ -135,6 +135,14 @@ class OwnerDashboardFragment : Fragment(R.layout.fragment_dashboard_admin) {
             }
         }
 
+        view.findViewById<Button>(R.id.btnManageItems).setOnClickListener {
+            try {
+                findNavController().navigate(R.id.to_item_management)
+            } catch (e: Exception) {
+                android.widget.Toast.makeText(context, "Navigation error: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+            }
+        }
+
         view.findViewById<Button>(R.id.btnAi).setOnClickListener {
              try {
                  findNavController().navigate(R.id.aiInsightsFragment)

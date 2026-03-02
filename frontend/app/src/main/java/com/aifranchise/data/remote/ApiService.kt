@@ -29,6 +29,9 @@ interface ApiService {
     @GET("items")
     suspend fun getItems(): ApiResponse<List<ItemDto>>
 
+    @POST("items")
+    suspend fun createItem(@Body request: CreateItemRequest): ApiResponse<ItemDto>
+
     // Inventory
     @GET("inventory/items")
     suspend fun getInventoryItems(): ApiResponse<List<InventoryItem>>
@@ -154,6 +157,12 @@ data class ItemDto(
     val name: String,
     val category: String? = null,
     val unitPrice: Double
+)
+data class CreateItemRequest(
+    val name: String,
+    val category: String,
+    val unitPrice: Double,
+    val purchaseCost: Double
 )
 
 // Inventory

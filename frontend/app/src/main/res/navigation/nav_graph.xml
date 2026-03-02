@@ -63,7 +63,14 @@
         <action android:id="@+id/to_inventory" app:destination="@id/inventoryFragment"/>
         <action android:id="@+id/to_attendance" app:destination="@id/attendanceFragment"/>
         <action android:id="@+id/to_ai" app:destination="@id/aiInsightsFragment"/>
+        <action android:id="@+id/to_item_management" app:destination="@id/itemManagementFragment"/>
     </fragment>
+
+    <fragment
+        android:id="@+id/itemManagementFragment"
+        android:name="com.aifranchise.ui.items.ItemManagementFragment"
+        android:label="Item Management"
+        tools:layout="@layout/fragment_item_management"/>
 
     <fragment
         android:id="@+id/managerDashboardFragment"

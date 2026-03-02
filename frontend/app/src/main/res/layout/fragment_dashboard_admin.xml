@@ -203,6 +203,17 @@
             </com.google.android.material.card.MaterialCardView>
 
             <Button
+                android:id="@+id/btnManageItems"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="📦 Manage Items"
+                app:cornerRadius="16dp"
+                android:backgroundTint="?attr/colorPrimary"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:layout_marginTop="20dp"/>
+
+            <Button
                 android:id="@+id/btnAi"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
@@ -211,7 +222,7 @@
                 android:backgroundTint="?attr/colorSecondary"
                 android:textColor="@color/black"
                 android:textStyle="bold"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="12dp"
                 android:layout_marginBottom="32dp"/>
 
         </LinearLayout>
