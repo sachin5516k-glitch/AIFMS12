@@ -1,4 +1,5 @@
 const asyncHandler = require('express-async-handler');
+const mongoose = require('mongoose');
 const Inventory = require('./inventoryModel');
 const Sales = require('../sales/salesModel');
 const StockTransferRequest = require('../transfer/stockTransferRequestModel');
@@ -20,7 +21,6 @@ const submitInventory = asyncHandler(async (req, res) => {
     for (const item of items) {
         let inv = await Inventory.findOne({ branchId, itemId: item.itemId });
         if (!inv) {
-            // Create new inventory record if it doesnt exist
             inv = await Inventory.create({
                 branchId,
                 itemId: item.itemId,
@@ -56,22 +56,39 @@ const getInventoryItems = asyncHandler(async (req, res) => {
     let query = {};
     if (branchId) query.branchId = branchId;
 
+    console.log('[Inventory] GET items - role:', req.user.role, 'branchId:', branchId);
+
     // Auto-create inventory for any missing items in this branch
     if (branchId) {
-        const Item = require('../item/itemModel');
-        const allItems = await Item.find({});
-        const existingInv = await Inventory.find({ branchId }).select('itemId');
-        const existingItemIds = new Set(existingInv.map(i => i.itemId.toString()));
-        const missingItems = allItems.filter(item => !existingItemIds.has(item._id.toString()));
-        if (missingItems.length > 0) {
-            const ops = missingItems.map(item => ({
-                insertOne: { document: { branchId, itemId: item._id, quantity: 0 } }
-            }));
-            await Inventory.bulkWrite(ops, { ordered: false }).catch(() => { });
+        try {
+            const Item = require('../item/itemModel');
+            const allItems = await Item.find({});
+            console.log('[Inventory] Total items in DB:', allItems.length);
+
+            const branchOid = new mongoose.Types.ObjectId(branchId);
+            const existingInv = await Inventory.find({ branchId: branchOid }).select('itemId');
+            const existingItemIds = new Set(existingInv.map(i => i.itemId.toString()));
+            const missingItems = allItems.filter(item => !existingItemIds.has(item._id.toString()));
+
+            console.log('[Inventory] Existing records:', existingInv.length, 'Missing:', missingItems.length);
+
+            if (missingItems.length > 0) {
+                for (const item of missingItems) {
+                    try {
+                        await Inventory.create({ branchId: branchOid, itemId: item._id, quantity: 0 });
+                    } catch (createErr) {
+                        if (createErr.code !== 11000) console.error('[Inventory] Create error:', createErr.message);
+                    }
+                }
+                console.log('[Inventory] Auto-created', missingItems.length, 'inventory records');
+            }
+        } catch (autoCreateErr) {
+            console.error('[Inventory] Auto-creation failed:', autoCreateErr.message);
         }
     }
 
     const inventory = await Inventory.find(query).populate('itemId', 'name category unitPrice');
+    console.log('[Inventory] Found', inventory.length, 'inventory records after populate');
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -79,16 +96,13 @@ const getInventoryItems = asyncHandler(async (req, res) => {
     const resultItems = await Promise.all(inventory.map(async (inv) => {
         if (!inv.itemId) return null;
 
-        // Sales today
         const salesDocs = await Sales.find({ branchId: inv.branchId, itemId: inv.itemId._id, createdAt: { $gte: today } });
         const salesCount = salesDocs.reduce((sum, s) => sum + s.quantitySold, 0);
 
-        // Transfers OUT today
         const reqsOut = await StockTransferRequest.find({ targetBranchId: inv.branchId, itemId: inv.itemId._id, status: 'APPROVED', updatedAt: { $gte: today } });
         const recsOut = await StockTransferRecommendation.find({ fromBranchId: inv.branchId, itemId: inv.itemId._id, status: { $in: ['APPROVED', 'COMPLETED'] }, updatedAt: { $gte: today } });
         const transferOut = reqsOut.reduce((sum, r) => sum + r.quantity, 0) + recsOut.reduce((sum, r) => sum + r.quantity, 0);
 
-        // Transfers IN today
         const reqsIn = await StockTransferRequest.find({ requestedByBranchId: inv.branchId, itemId: inv.itemId._id, status: 'APPROVED', updatedAt: { $gte: today } });
         const recsIn = await StockTransferRecommendation.find({ toBranchId: inv.branchId, itemId: inv.itemId._id, status: { $in: ['APPROVED', 'COMPLETED'] }, updatedAt: { $gte: today } });
         const transferIn = reqsIn.reduce((sum, r) => sum + r.quantity, 0) + recsIn.reduce((sum, r) => sum + r.quantity, 0);
@@ -101,19 +115,22 @@ const getInventoryItems = asyncHandler(async (req, res) => {
             itemId: inv.itemId._id.toString(),
             itemName: inv.itemId.name,
             name: inv.itemId.name,
-            openingStock: openingStock,
+            openingStock,
             sales: salesCount,
-            transferOut: transferOut,
-            transferIn: transferIn,
-            closingStock: closingStock,
-            lastStock: closingStock // fallback for old android ver
+            transferOut,
+            transferIn,
+            closingStock,
+            lastStock: closingStock
         };
     }));
+
+    const filtered = resultItems.filter(Boolean);
+    console.log('[Inventory] Returning', filtered.length, 'items to frontend');
 
     res.json({
         success: true,
         message: 'Inventory retrieved successfully',
-        data: resultItems.filter(Boolean)
+        data: filtered
     });
 });
 
