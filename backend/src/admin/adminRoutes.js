@@ -23,4 +23,7 @@ router.route('/dashboard-summary')
 router.route('/stock-transfer/request')
     .post(require('./adminController').createManualTransferRequest);
 
+router.route('/hard-reset-items')
+    .delete(require('./adminController').hardResetItemsAndInventory);
+
 module.exports = router;

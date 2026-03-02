@@ -255,10 +255,28 @@ const createManualTransferRequest = asyncHandler(async (req, res) => {
     });
 });
 
+// @desc    Hard reset: Delete all items and inventory
+// @route   DELETE /api/admin/hard-reset-items
+// @access  Private/Admin
+const hardResetItemsAndInventory = asyncHandler(async (req, res) => {
+    const deletedItems = await Item.deleteMany({});
+    const deletedInventory = await Inventory.deleteMany({});
+
+    res.status(200).json({
+        success: true,
+        message: 'Hard reset complete',
+        data: {
+            itemsDeleted: deletedItems.deletedCount,
+            inventoryDeleted: deletedInventory.deletedCount
+        }
+    });
+});
+
 module.exports = {
     getManagers,
     addManager,
     deactivateManager,
     getDashboardSummary,
-    createManualTransferRequest
+    createManualTransferRequest,
+    hardResetItemsAndInventory
 };
