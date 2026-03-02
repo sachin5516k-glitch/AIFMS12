@@ -65,10 +65,13 @@ app.use('/api/notifications', require('./notification/notificationRoutes'));
 app.use('/api/transfers', require('./transfer/transferRoutes'));
 app.use('/api/dashboard', require('./dashboard/dashboardRoutes'));
 app.use('/api/ai', require('./ai/aiRoutes'));
+app.use('/api/analytics', require('./ai/aiRoutes')); // Dual mount to resolve /analytics/item-sales neatly
 const reportRoutes = require('./reports/reportRoutes');
 const diagnosticRoutes = require('./routes/diagnosticsRoutes');
+const adminRoutes = require('./admin/adminRoutes');
 app.use('/api/admin', reportRoutes);
 app.use('/api/admin', diagnosticRoutes); // Mounts /api/admin/diagnostics
+app.use('/api/admin', adminRoutes);
 app.use('/api/audit', require('./audit/auditRoutes'));
 app.use('/api/logs', require('./routes/logRoutes')); // Crash Reporting & Logs
 

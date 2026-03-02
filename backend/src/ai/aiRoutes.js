@@ -18,8 +18,8 @@ router.get('/insights/:outletId', protect, async (req, res) => {
         // 2. Failure Risk
         const { riskLevel, factors } = await predictFailureRisk(outletId);
 
-        // 3. Fraud Probability (Avg of recent fraud scores)
-        const matchStage = outletId === 'global' ? {} : { outletId };
+        // 3. Fraud Probability
+        const matchStage = outletId === 'global' ? {} : { branchId: outletId };
         const fraudStats = await Sales.aggregate([
             { $match: matchStage },
             { $sort: { createdAt: -1 } },
@@ -27,7 +27,15 @@ router.get('/insights/:outletId', protect, async (req, res) => {
             { $group: { _id: null, avgFraud: { $avg: "$fraudScore" } } }
         ]);
 
-        const fraudProbability = fraudStats.length > 0 ? Math.round(fraudStats[0].avgFraud) : 0;
+        let fraudProbability = fraudStats.length > 0 ? Math.round(fraudStats[0].avgFraud) : 0;
+
+        // Apply dynamic risk multipliers based on Health Engine factors
+        if (factors.some(f => f.includes('CRITICAL: Sales registered but no staff attendance'))) {
+            fraudProbability = Math.min(100, fraudProbability + 40);
+        }
+        if (factors.some(f => f.includes('Unusual spike in sales'))) {
+            fraudProbability = Math.min(100, fraudProbability + 20);
+        }
 
         res.json({
             success: true,
@@ -41,6 +49,61 @@ router.get('/insights/:outletId', protect, async (req, res) => {
 
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+});
+
+// @desc    Get Item Sales Chart Data (Last 7 Days)
+// @route   GET /api/analytics/item-sales
+// @access  Private
+router.get('/analytics/item-sales', protect, async (req, res) => {
+    try {
+        const branchId = req.user.role === 'manager' || req.user.role === 'employee'
+            ? req.user.branchId
+            : null;
+
+        const dateOffset = new Date();
+        dateOffset.setDate(dateOffset.getDate() - 7);
+
+        const matchStage = { createdAt: { $gte: dateOffset } };
+        if (branchId) matchStage.branchId = branchId;
+
+        const salesAgg = await Sales.aggregate([
+            { $match: matchStage },
+            {
+                $group: {
+                    _id: "$itemId",
+                    totalQuantity: { $sum: "$quantitySold" }
+                }
+            },
+            {
+                $lookup: {
+                    from: "items",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "itemDetails"
+                }
+            },
+            { $unwind: "$itemDetails" },
+            {
+                $project: {
+                    _id: 0,
+                    itemName: "$itemDetails.name",
+                    totalSales: "$totalQuantity"
+                }
+            },
+            { $sort: { totalSales: -1 } }
+        ]);
+
+        res.status(200).json({
+            success: true,
+            data: salesAgg
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch item sales analytics'
+        });
     }
 });
 

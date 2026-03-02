@@ -62,4 +62,53 @@ const exportSalesCsv = asyncHandler(async (req, res) => {
     return res.status(200).send(csvContent);
 });
 
-module.exports = { getSalesReport, exportSalesCsv };
+// @desc    Get Inventory Summary for Admin
+// @route   GET /api/admin/inventory-summary
+// @access  Private/Admin
+const getAdminInventorySummary = asyncHandler(async (req, res) => {
+    try {
+        const inventory = await Inventory.find({}).populate('itemId', 'name category unitPrice').populate('branchId', 'name');
+
+        let lowStockCount = 0;
+        let totalValuation = 0;
+
+        // Let's count unique actual items based on itemId
+        const uniqueItems = new Set();
+
+        inventory.forEach(inv => {
+            if (inv.itemId) {
+                uniqueItems.add(inv.itemId._id.toString());
+                totalValuation += inv.quantity * (inv.itemId.unitPrice || 0);
+                if (inv.quantity < 10) {
+                    lowStockCount++;
+                }
+            }
+        });
+
+        const totalItems = uniqueItems.size;
+
+        const healthyPercentage = inventory.length > 0
+            ? Math.round(((inventory.length - lowStockCount) / inventory.length) * 100)
+            : 100;
+
+        return res.status(200).json({
+            success: true,
+            message: 'Admin inventory summary retrieved',
+            data: {
+                totalItems,
+                lowStockCount,
+                healthyPercentage,
+                totalValuation,
+                items: inventory
+            }
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to generate inventory summary',
+            data: null
+        });
+    }
+});
+
+module.exports = { getSalesReport, exportSalesCsv, getAdminInventorySummary };

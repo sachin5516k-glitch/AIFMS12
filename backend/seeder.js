@@ -11,6 +11,7 @@ const Branch = require('./src/branch/branchModel');
 const User = require('./src/auth/userModel');
 const Item = require('./src/item/itemModel');
 const Inventory = require('./src/inventory/inventoryModel');
+const Sales = require('./src/sales/salesModel');
 
 const seedData = async () => {
     try {
@@ -22,6 +23,7 @@ const seedData = async () => {
         await User.deleteMany();
         await Item.deleteMany();
         await Inventory.deleteMany();
+        await Sales.deleteMany();
 
         console.log('Creating Admin User...');
         const salt = await bcrypt.genSalt(10);
@@ -82,22 +84,8 @@ const seedData = async () => {
                 branchId: branchCentral._id
             },
             {
-                name: 'Employee Two (Central)',
-                email: 'emp2.central@pskfoods.com',
-                password: 'password123',
-                role: 'employee',
-                branchId: branchCentral._id
-            },
-            {
                 name: 'Employee One (North)',
                 email: 'emp1.north@pskfoods.com',
-                password: 'password123',
-                role: 'employee',
-                branchId: branchNorth._id
-            },
-            {
-                name: 'Employee Two (North)',
-                email: 'emp2.north@pskfoods.com',
                 password: 'password123',
                 role: 'employee',
                 branchId: branchNorth._id
@@ -117,10 +105,7 @@ const seedData = async () => {
             { name: 'Pizza', category: 'Fast Food', unitPrice: 8.00, purchaseCost: 4.00, sellingPrice: 8.00, marginPercentage: 50, createdBy: admin._id },
             { name: 'French Fries', category: 'Fast Food', unitPrice: 3.00, purchaseCost: 1.00, sellingPrice: 3.00, marginPercentage: 66.6, createdBy: admin._id },
             { name: 'Veg Wrap', category: 'Fast Food', unitPrice: 4.00, purchaseCost: 1.50, sellingPrice: 4.00, marginPercentage: 62.5, createdBy: admin._id },
-            { name: 'Chicken Wrap', category: 'Fast Food', unitPrice: 5.50, purchaseCost: 2.50, sellingPrice: 5.50, marginPercentage: 54.5, createdBy: admin._id },
-            { name: 'Cold Coffee', category: 'Beverage', unitPrice: 3.50, purchaseCost: 1.00, sellingPrice: 3.50, marginPercentage: 71.4, createdBy: admin._id },
-            { name: 'Soft Drink', category: 'Beverage', unitPrice: 2.00, purchaseCost: 0.50, sellingPrice: 2.00, marginPercentage: 75, createdBy: admin._id },
-            { name: 'Sandwich', category: 'Fast Food', unitPrice: 3.50, purchaseCost: 1.50, sellingPrice: 3.50, marginPercentage: 57.1, createdBy: admin._id }
+            { name: 'Cold Coffee', category: 'Beverage', unitPrice: 3.50, purchaseCost: 1.00, sellingPrice: 3.50, marginPercentage: 71.4, createdBy: admin._id }
         ];
 
         const createdItems = await Item.insertMany(itemsList); // No password hashing needed here, insertMany is fine
@@ -147,6 +132,34 @@ const seedData = async () => {
         });
 
         await Inventory.insertMany(inventoryData);
+
+        console.log('Creating Sales Data...');
+        const salesData = [];
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - 14); // Last 14 days
+
+        const employees = await User.find({ role: 'employee' });
+
+        for (let i = 0; i < 50; i++) {
+            const branch = i % 2 === 0 ? branchCentral : branchNorth;
+            const item = createdItems[Math.floor(Math.random() * createdItems.length)];
+            const qty = Math.floor(Math.random() * 5) + 1;
+
+            const saleDate = new Date(startDate.getTime() + Math.random() * (new Date().getTime() - startDate.getTime()));
+            const emp = employees.find(e => e.branchId.toString() === branch._id.toString());
+
+            salesData.push({
+                branchId: branch._id,
+                itemId: item._id,
+                quantitySold: qty,
+                totalAmount: qty * item.sellingPrice,
+                sellingPrice: item.sellingPrice,
+                paymentMode: Math.random() > 0.5 ? 'Cash' : 'UPI',
+                createdBy: emp ? emp._id : admin._id,
+                createdAt: saleDate
+            });
+        }
+        await Sales.insertMany(salesData);
 
         console.log('Database Seeding Completed Successfully!');
         process.exit();

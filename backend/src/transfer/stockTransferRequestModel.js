@@ -21,6 +21,10 @@ const stockTransferRequestSchema = new mongoose.Schema({
         required: true,
         min: 1
     },
+    distanceKm: {
+        type: Number,
+        default: 0
+    },
     status: {
         type: String,
         enum: ['PENDING', 'APPROVED', 'REJECTED'],
