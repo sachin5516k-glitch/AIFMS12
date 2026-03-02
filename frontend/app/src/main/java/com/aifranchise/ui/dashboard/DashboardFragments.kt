@@ -46,7 +46,7 @@ class OwnerDashboardFragment : Fragment(R.layout.fragment_dashboard_admin) {
         val rvBranchInventory = view.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvBranchInventory)
         rvBranchInventory?.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(requireContext())
         
-        val inventoryAdapter = com.aifranchise.ui.inventory.InventoryAdapter(emptyList()) { /* no update action from dashboard */ }
+        val inventoryAdapter = DashboardInventoryAdapter(emptyList())
         rvBranchInventory?.adapter = inventoryAdapter
 
         val branchAdapter = BranchHorizontalAdapter(emptyList()) { branch ->
