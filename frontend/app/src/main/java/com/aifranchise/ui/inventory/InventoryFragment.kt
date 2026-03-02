@@ -51,15 +51,15 @@ class InventoryFragment : Fragment() {
         }
 
         binding.btnSubmitInventory.setOnClickListener {
-            viewModel.submitInventory("", updates.values.toList())
+            viewModel.submitInventory(updates.values.toList())
         }
 
         binding.btnSaveModal.setOnClickListener {
             currentEditItem?.let { item ->
                 val added = binding.etQuantityAdded.text.toString().toIntOrNull() ?: 0
-                updates[item.id] = InventoryUpdateItem(item.id, added)
+                updates[item.actualItemId()] = InventoryUpdateItem(item.actualItemId(), added)
                 hideModal()
-                Toast.makeText(context, "${item.name} staged to be updated", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "${item.displayName()} staged to be updated", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -79,8 +79,8 @@ class InventoryFragment : Fragment() {
 
     private fun showModal(item: InventoryItem) {
         currentEditItem = item
-        binding.tvModalTitle.text = "Update ${item.name}"
-        binding.etQuantityAdded.setText(updates[item.id]?.quantityAdded?.toString() ?: "")
+        binding.tvModalTitle.text = "Update ${item.displayName()}"
+        binding.etQuantityAdded.setText(updates[item.actualItemId()]?.quantityAdded?.toString() ?: "")
         
         binding.viewOverlay.isVisible = true
         binding.viewOverlay.alpha = 0f
@@ -153,7 +153,8 @@ class InventoryFragment : Fragment() {
                     is ResultState.Success -> {
                         binding.progressBar.isVisible = false
                         Toast.makeText(context, "Inventory Updated successfully!", Toast.LENGTH_SHORT).show()
-                        updates.clear() // Clear cache
+                        updates.clear()
+                        viewModel.loadItems() // Refresh list from DB
                     }
                      is ResultState.Error -> {
                         binding.progressBar.isVisible = false

@@ -33,13 +33,12 @@ class InventoryViewModel @Inject constructor(
         }
     }
 
-    fun submitInventory(outletId: String, updates: List<InventoryUpdateItem>) {
+    fun submitInventory(updates: List<InventoryUpdateItem>) {
         if (updates.isEmpty()) {
              _submissionState.value = ResultState.Error(Exception("No items to update"))
              return
         }
         
-        // Validation: Check for negative values
         val hasInvalidValues = updates.any { it.quantityAdded < 0 }
         if (hasInvalidValues) {
             _submissionState.value = ResultState.Error(Exception("Stock cannot be negative"))
@@ -47,7 +46,7 @@ class InventoryViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            repository.submitInventory(InventoryRequest(outletId, updates)).collect {
+            repository.submitInventory(InventoryRequest(updates)).collect {
                 _submissionState.value = it
             }
         }

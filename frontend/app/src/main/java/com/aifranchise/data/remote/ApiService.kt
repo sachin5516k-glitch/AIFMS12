@@ -158,26 +158,27 @@ data class ItemDto(
 
 // Inventory
 data class InventoryItem(
-    @SerializedName("_id") val id: String, 
-    val name: String, 
-    val lastStock: Int
-)
+    @SerializedName("_id") val id: String,
+    val itemId: String? = null,
+    val itemName: String? = null,
+    val name: String? = null,
+    val openingStock: Int = 0,
+    val closingStock: Int = 0,
+    val sales: Int = 0,
+    val transferOut: Int = 0,
+    val transferIn: Int = 0,
+    val lastStock: Int = 0
+) {
+    fun displayName(): String = itemName ?: name ?: "Unknown"
+    fun actualItemId(): String = itemId ?: id
+}
 data class InventoryRequest(
-    val outletId: String,
     val items: List<InventoryUpdateItem>
 )
 data class InventoryUpdateItem(val itemId: String, val quantityAdded: Int)
 
 data class InventoryResponse(
-    @SerializedName("_id") val id: String,
-    val items: List<InventoryResultItem>
-)
-data class InventoryResultItem(
-    val closingStock: Int,
-    val sales: Int,
-    val transferOut: Int,
-    val transferIn: Int,
-    @SerializedName("_id") val id: String
+    val message: String? = null
 )
 
 // Attendance

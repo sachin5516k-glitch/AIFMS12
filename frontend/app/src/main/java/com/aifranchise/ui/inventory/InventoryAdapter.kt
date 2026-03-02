@@ -22,16 +22,16 @@ class InventoryAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
+        val stock = item.closingStock
         holder.binding.apply {
-            tvItemName.text = item.name
-            tvLastStock.text = "${item.lastStock} units"
+            tvItemName.text = item.displayName()
+            tvLastStock.text = "${stock} units"
             
-            pbStock.progress = Math.min(item.lastStock, 100)
+            pbStock.progress = Math.min(stock, 100)
             
-            // Color coding Stock Health
             val color = when {
-                item.lastStock > 50 -> Color.parseColor("#059669") // Green
-                item.lastStock > 20 -> Color.parseColor("#D97706") // Orange
+                stock > 50 -> Color.parseColor("#059669") // Green
+                stock > 20 -> Color.parseColor("#D97706") // Orange
                 else -> Color.parseColor("#DC2626") // Red
             }
             pbStock.progressTintList = ColorStateList.valueOf(color)
