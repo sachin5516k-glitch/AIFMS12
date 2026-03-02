@@ -56,6 +56,21 @@ const getInventoryItems = asyncHandler(async (req, res) => {
     let query = {};
     if (branchId) query.branchId = branchId;
 
+    // Auto-create inventory for any missing items in this branch
+    if (branchId) {
+        const Item = require('../item/itemModel');
+        const allItems = await Item.find({});
+        const existingInv = await Inventory.find({ branchId }).select('itemId');
+        const existingItemIds = new Set(existingInv.map(i => i.itemId.toString()));
+        const missingItems = allItems.filter(item => !existingItemIds.has(item._id.toString()));
+        if (missingItems.length > 0) {
+            const ops = missingItems.map(item => ({
+                insertOne: { document: { branchId, itemId: item._id, quantity: 0 } }
+            }));
+            await Inventory.bulkWrite(ops, { ordered: false }).catch(() => { });
+        }
+    }
+
     const inventory = await Inventory.find(query).populate('itemId', 'name category unitPrice');
 
     const today = new Date();
