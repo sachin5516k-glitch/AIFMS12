@@ -96,6 +96,17 @@ const PORT = process.env.PORT || 5000;
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+
+    // Keep-alive self-ping every 13 minutes to prevent Render free tier from sleeping
+    const KEEP_ALIVE_INTERVAL = 13 * 60 * 1000; // 13 minutes
+    setInterval(() => {
+      const url = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
+      require('https').get(`${url}/ping`, () => { }).on('error', () => {
+        // Try http if https fails (localhost)
+        require('http').get(`http://localhost:${PORT}/ping`, () => { }).on('error', () => { });
+      });
+      console.log(`[Keep-Alive] Pinged server at ${new Date().toISOString()}`);
+    }, KEEP_ALIVE_INTERVAL);
   });
 }
 
