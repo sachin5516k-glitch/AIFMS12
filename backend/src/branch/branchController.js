@@ -22,6 +22,7 @@ const createBranch = asyncHandler(async (req, res) => {
 
 const Inventory = require('../inventory/inventoryModel');
 const Sales = require('../sales/salesModel');
+const User = require('../auth/userModel');
 
 // @desc    Get branches
 // @route   GET /api/branches
@@ -92,7 +93,54 @@ const getBranches = asyncHandler(async (req, res) => {
     });
 });
 
+// @desc    Get single branch details with stats
+// @route   GET /api/branches/:id
+// @access  Private
+const getBranchById = asyncHandler(async (req, res) => {
+    const branch = await Branch.findById(req.params.id).lean();
+    if (!branch) {
+        res.status(404);
+        throw new Error('Branch not found');
+    }
+
+    // Manager
+    const manager = await User.findOne({ branchId: branch._id, role: 'manager' }).select('name');
+
+    // Staff Count
+    const staffCount = await User.countDocuments({ branchId: branch._id, role: 'employee' });
+
+    // Total Sales
+    const salesData = await Sales.aggregate([
+        { $match: { branchId: branch._id } },
+        { $group: { _id: null, totalRevenue: { $sum: "$totalAmount" } } }
+    ]);
+    const totalSales = salesData.length > 0 ? salesData[0].totalRevenue : 0;
+
+    // Health
+    const inventories = await Inventory.find({ branchId: branch._id });
+    let isHealthy = "Good";
+    const lowStockItems = inventories.filter(inv => inv.quantity < 10);
+    if (lowStockItems.length > 0) {
+        isHealthy = `Warning (${lowStockItems.length} items low)`;
+    }
+    if (inventories.length === 0) {
+        isHealthy = "No Stock";
+    }
+
+    res.status(200).json({
+        success: true,
+        data: {
+            ...branch,
+            managerName: manager ? manager.name : 'Unassigned',
+            staffCount,
+            totalSales,
+            stockHealth: isHealthy
+        }
+    });
+});
+
 module.exports = {
     createBranch,
     getBranches,
+    getBranchById
 };
