@@ -40,7 +40,7 @@ class InventoryViewModel @Inject constructor(
         }
         
         // Validation: Check for negative values
-        val hasInvalidValues = updates.any { it.opening < 0 || it.closing < 0 }
+        val hasInvalidValues = updates.any { it.quantityAdded < 0 }
         if (hasInvalidValues) {
             _submissionState.value = ResultState.Error(Exception("Stock cannot be negative"))
             return

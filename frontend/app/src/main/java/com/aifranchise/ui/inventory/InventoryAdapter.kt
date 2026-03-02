@@ -1,22 +1,17 @@
 package com.aifranchise.ui.inventory
 
-import android.text.Editable
-import android.text.TextWatcher
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.aifranchise.data.remote.InventoryItem
-import com.aifranchise.data.remote.InventoryUpdateItem
 import com.aifranchise.databinding.ItemInventoryBinding
 
 class InventoryAdapter(
     private var items: List<InventoryItem>,
-    private val onUpdate: (String, Int, Int) -> Unit
+    private val onUpdateClick: (InventoryItem) -> Unit
 ) : RecyclerView.Adapter<InventoryAdapter.ViewHolder>() {
-
-    // Cache user inputs to prevent recycling issues
-    private val openingCache = mutableMapOf<String, Int>()
-    private val closingCache = mutableMapOf<String, Int>()
 
     inner class ViewHolder(val binding: ItemInventoryBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -29,28 +24,21 @@ class InventoryAdapter(
         val item = items[position]
         holder.binding.apply {
             tvItemName.text = item.name
-            tvLastStock.text = "Last: ${item.lastStock}"
-
-            // Remove listeners before setting text to avoid infinite loops
-            etOpening.onFocusChangeListener = null
-            etClosing.onFocusChangeListener = null
-
-            etOpening.setText(openingCache[item.id]?.toString() ?: "")
-            etClosing.setText(closingCache[item.id]?.toString() ?: "")
-
-            val textWatcher = object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-                override fun afterTextChanged(s: Editable?) {
-                    val open = etOpening.text.toString().toIntOrNull() ?: 0
-                    val close = etClosing.text.toString().toIntOrNull() ?: 0
-                    openingCache[item.id] = open
-                    closingCache[item.id] = close
-                    onUpdate(item.id, open, close)
-                }
+            tvLastStock.text = "${item.lastStock} units"
+            
+            pbStock.progress = Math.min(item.lastStock, 100)
+            
+            // Color coding Stock Health
+            val color = when {
+                item.lastStock > 50 -> Color.parseColor("#059669") // Green
+                item.lastStock > 20 -> Color.parseColor("#D97706") // Orange
+                else -> Color.parseColor("#DC2626") // Red
             }
-            etOpening.addTextChangedListener(textWatcher)
-            etClosing.addTextChangedListener(textWatcher)
+            pbStock.progressTintList = ColorStateList.valueOf(color)
+
+            btnUpdateStock.setOnClickListener {
+                onUpdateClick(item)
+            }
         }
     }
 

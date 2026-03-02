@@ -3,6 +3,7 @@ package com.aifranchise.ui.ai
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aifranchise.data.remote.AiInsightsResponse
+import com.aifranchise.data.remote.AnalyticsItemSalesDto
 import com.aifranchise.data.remote.ResultState
 import com.aifranchise.data.repository.AiInsightsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,10 +20,18 @@ class AiInsightsViewModel @Inject constructor(
     private val _insightsState = MutableStateFlow<ResultState<AiInsightsResponse>?>(null)
     val insightsState = _insightsState.asStateFlow()
 
+    private val _itemSalesState = MutableStateFlow<ResultState<List<AnalyticsItemSalesDto>>?>(null)
+    val itemSalesState = _itemSalesState.asStateFlow()
+
     fun loadInsights(outletId: String) {
         viewModelScope.launch {
             repository.getAiInsights(outletId).collect {
                 _insightsState.value = it
+            }
+        }
+        viewModelScope.launch {
+            repository.getItemSales().collect {
+                _itemSalesState.value = it
             }
         }
     }

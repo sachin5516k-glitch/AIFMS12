@@ -1,32 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="176dp"
-    android:background="?attr/colorPrimary"
+    android:layout_height="200dp"
+    android:background="@drawable/drawer_header_bg"
     android:gravity="bottom"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:padding="24dp"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        android:textStyle="bold" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        
+        <!-- Avatar card -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            app:cardCornerRadius="32dp"
+            app:cardElevation="4dp">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/img_psk_logo"
+                android:background="@color/brand_yellow"
+                android:padding="16dp"/>
+        </androidx.cardview.widget.CardView>
+        
+        <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
+        
+        <!-- Role Badge -->
+        <TextView
+            android:id="@+id/tvHeaderRole"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="AD"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:background="@drawable/badge_bg"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="4dp"/>
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvHeaderUserName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:text="User Name"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
     <TextView
-        android:id="@+id/tvHeaderRole"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Role Badge"
+        android:text="PSK Foods Account"
+        android:textColor="#E0E0E0"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 </LinearLayout>

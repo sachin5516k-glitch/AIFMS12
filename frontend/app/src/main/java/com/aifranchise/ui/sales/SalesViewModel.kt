@@ -20,7 +20,7 @@ class SalesViewModel @Inject constructor(
     private val _salesState = MutableStateFlow<ResultState<SalesResponse>?>(null)
     val salesState = _salesState.asStateFlow()
 
-    fun submitSales(outletId: String, amountStr: String, paymentMode: String, imageUrl: String?) {
+    fun submitSales(outletId: String, amountStr: String, paymentMode: String) {
         if (amountStr.isBlank()) {
             _salesState.value = ResultState.Error(Exception("Amount is required"))
             return
@@ -32,12 +32,7 @@ class SalesViewModel @Inject constructor(
             return
         }
 
-        if (imageUrl.isNullOrBlank()) {
-             _salesState.value = ResultState.Error(Exception("Proof image is required"))
-             return
-        }
-
-        val request = SalesRequest(outletId, amount, paymentMode, imageUrl)
+        val request = SalesRequest(outletId, amount, paymentMode)
 
         viewModelScope.launch {
             repository.submitSales(request).collect {

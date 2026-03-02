@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="?android:windowBackground">
+
+    <TextView
+        android:id="@+id/tvDetailTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Branch Details"
+        android:textSize="28sp"
+        android:textColor="?attr/colorPrimary"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp"/>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+            <TextView android:id="@+id/tvDetailName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Name: ..." android:textSize="18sp" android:textStyle="bold"/>
+            <TextView android:id="@+id/tvDetailAddress" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Address: ..." android:layout_marginTop="8dp"/>
+            <TextView android:id="@+id/tvDetailManager" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Manager: Loading..." android:layout_marginTop="8dp"/>
+            <TextView android:id="@+id/tvDetailStaff" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Staff Count: Loading..." android:layout_marginTop="8dp"/>
+            <TextView android:id="@+id/tvDetailSales" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sales: Loading..." android:layout_marginTop="8dp"/>
+            <TextView android:id="@+id/tvDetailStockHealth" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Stock Health: Loading..." android:layout_marginTop="8dp"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Back to Dashboard"
+        style="@style/Widget.MaterialComponents.Button.TextButton"/>
+
+</LinearLayout>

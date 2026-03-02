@@ -18,7 +18,7 @@ class InventoryRepository @Inject constructor(
         emit(ResultState.Loading)
         try {
             val response = apiService.getInventoryItems()
-            if (response.success) {
+            if (response.success && response.data != null) {
                 emit(ResultState.Success(response.data))
             } else {
                 emit(ResultState.Error(Exception(response.message)))
@@ -32,7 +32,7 @@ class InventoryRepository @Inject constructor(
         emit(ResultState.Loading)
         try {
             val response = apiService.submitInventory(request)
-            if (response.success) {
+            if (response.success && response.data != null) {
                 emit(ResultState.Success(response.data))
             } else {
                 emit(ResultState.Error(Exception(response.message)))

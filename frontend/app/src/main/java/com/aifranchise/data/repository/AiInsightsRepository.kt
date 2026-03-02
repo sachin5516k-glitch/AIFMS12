@@ -1,6 +1,7 @@
 package com.aifranchise.data.repository
 
 import com.aifranchise.data.remote.AiInsightsResponse
+import com.aifranchise.data.remote.AnalyticsItemSalesDto
 import com.aifranchise.data.remote.ApiService
 import com.aifranchise.data.remote.ResultState
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +17,21 @@ class AiInsightsRepository @Inject constructor(
         emit(ResultState.Loading)
         try {
             val response = apiService.getAiInsights(outletId)
-            if (response.success) {
+            if (response.success && response.data != null) {
+                emit(ResultState.Success(response.data))
+            } else {
+                emit(ResultState.Error(Exception(response.message)))
+            }
+        } catch (e: Exception) {
+            emit(ResultState.Error(Exception(com.aifranchise.util.ApiUtils.parseError(e))))
+        }
+    }.flowOn(Dispatchers.IO)
+
+    suspend fun getItemSales(): Flow<ResultState<List<AnalyticsItemSalesDto>>> = flow {
+        emit(ResultState.Loading)
+        try {
+            val response = apiService.getItemSales()
+            if (response.success && response.data != null) {
                 emit(ResultState.Success(response.data))
             } else {
                 emit(ResultState.Error(Exception(response.message)))

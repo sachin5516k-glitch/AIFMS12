@@ -17,7 +17,7 @@ class AttendanceRepository @Inject constructor(
         emit(ResultState.Loading)
         try {
             val response = apiService.checkIn(request)
-            if (response.success) {
+            if (response.success && response.data != null) {
                 emit(ResultState.Success(response.data))
             } else {
                 emit(ResultState.Error(Exception(response.message)))
@@ -31,7 +31,7 @@ class AttendanceRepository @Inject constructor(
         emit(ResultState.Loading)
         try {
             val response = apiService.checkOut(request)
-            if (response.success) {
+            if (response.success && response.data != null) {
                 emit(ResultState.Success(response.data))
             } else {
                 emit(ResultState.Error(Exception(response.message)))

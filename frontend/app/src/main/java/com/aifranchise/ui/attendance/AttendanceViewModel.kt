@@ -21,8 +21,8 @@ class AttendanceViewModel @Inject constructor(
     val attendanceState = _attendanceState.asStateFlow()
 
     fun markAttendance(isCheckIn: Boolean, userId: String, outletId: String, lat: Double, lng: Double, imageUrl: String?) {
-        if (imageUrl.isNullOrBlank()) {
-            _attendanceState.value = ResultState.Error(Exception("Selfie is required"))
+        if (isCheckIn && imageUrl.isNullOrBlank()) {
+            _attendanceState.value = ResultState.Error(Exception("Selfie is required for check-in"))
             return
         }
         
@@ -32,7 +32,7 @@ class AttendanceViewModel @Inject constructor(
              return
         }
 
-        val request = AttendanceRequest(userId, outletId, lat, lng, imageUrl)
+        val request = AttendanceRequest(userId, outletId, lat, lng, imageUrl ?: "")
 
         viewModelScope.launch {
             if (isCheckIn) {

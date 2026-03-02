@@ -1,130 +1,169 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipeRefresh"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:background="@color/white">
+    android:background="?android:windowBackground"
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="AI Store Insights"
-        android:textSize="24sp"
+        android:text="AI Insights &amp; Analytics"
+        android:textSize="28sp"
         android:textStyle="bold"
+        android:textColor="?attr/colorPrimary"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardHealth"
+    <ScrollView
+        android:id="@+id/svAiContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="4dp"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp">
-
-            <TextView
-                android:id="@+id/tvHealthLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Health Score"
-                android:textSize="18sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
-
-            <ProgressBar
-                android:id="@+id/pbHealth"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:indeterminate="false"
-                android:max="100"
-                android:progress="0"
-                android:progressDrawable="@drawable/circular_progress"
-                app:layout_constraintTop_toBottomOf="@id/tvHealthLabel"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="16dp"/>
-
-            <TextView
-                android:id="@+id/tvHealthScore"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="--"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                app:layout_constraintTop_toTopOf="@id/pbHealth"
-                app:layout_constraintBottom_toBottomOf="@id/pbHealth"
-                app:layout_constraintStart_toStartOf="@id/pbHealth"
-                app:layout_constraintEnd_toEndOf="@id/pbHealth"/>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardFraud"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginTop="16dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="4dp"
-        app:layout_constraintTop_toBottomOf="@id/cardHealth">
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- Health Score Circular Chart -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardHealth"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Fraud Probability"
-                android:textSize="18sp"/>
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
+                
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-            <TextView
-                android:id="@+id/tvFraudScore"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="--%"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:layout_marginTop="8dp"
-                android:textColor="@color/danger"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="System Health Breakdown"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:textColor="?attr/colorPrimaryVariant"/>
 
-            <TextView
-                android:id="@+id/tvRiskLevel"
-                android:layout_width="wrap_content"
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:id="@+id/pieChartHealth"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:layout_marginTop="16dp"/>
+
+                    <TextView
+                        android:id="@+id/tvHealthScore"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Global Health: --"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:layout_marginTop="8dp"/>
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Branch Comparison Bar Chart -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardComparison"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Failure Risk: --"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cross-Branch Risk Comparison"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:textColor="?attr/colorPrimaryVariant"/>
+
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/barChartBranches"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:layout_marginTop="16dp"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Fraud / Low Stock Glow Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardAlerts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp"
+                app:strokeWidth="2dp"
+                app:strokeColor="@color/danger"> <!-- Glow styling -->
+                
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:background="#1AEE0000"> <!-- Red tint background -->
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Critical Alert Diagnostics"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:textColor="@color/danger"/>
+
+                    <TextView
+                        android:id="@+id/tvFraudScore"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Fraud Probability: --%"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="12dp"
+                        android:textColor="@color/danger"/>
+
+                    <TextView
+                        android:id="@+id/tvRiskLevel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Overall Risk Level: --"
+                        android:layout_marginTop="4dp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/tvFactors"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Analyzing primary contributing factors..."
+                        android:layout_marginTop="12dp"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
         </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Top Contributing Factors"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_marginTop="24dp"
-        app:layout_constraintTop_toBottomOf="@id/cardFraud"
-        app:layout_constraintStart_toStartOf="parent"/>
-
-    <TextView
-        android:id="@+id/tvFactors"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Loading..."
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/cardFraud"
-        android:paddingTop="32dp"/>
+    </ScrollView>
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -137,3 +176,4 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

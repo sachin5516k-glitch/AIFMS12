@@ -14,6 +14,10 @@ import com.aifranchise.R
 import com.aifranchise.data.remote.ResultState
 import com.aifranchise.databinding.FragmentLoginBinding
 import dagger.hilt.android.AndroidEntryPoint
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
+import android.util.Log
+import android.view.animation.AccelerateDecelerateInterpolator
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -50,17 +54,19 @@ class LoginFragment : Fragment() {
             viewModel.loginState.collect { state ->
                 when (state) {
                     is ResultState.Loading -> {
-                        binding.progressBar.isVisible = true
+                        showLoadingAnimation()
                         binding.btnLogin.isEnabled = false
                     }
                     is ResultState.Success -> {
-                        binding.progressBar.isVisible = false
+                        hideLoadingAnimation()
                         binding.btnLogin.isEnabled = true
+                        Log.d("PSK_DEBUG", "Login Success for role: ${state.data.user.role}")
                         handleRoleNavigation(state.data.user.role)
                     }
                     is ResultState.Error -> {
-                        binding.progressBar.isVisible = false
+                        hideLoadingAnimation()
                         binding.btnLogin.isEnabled = true
+                        Log.e("PSK_DEBUG", "Login Failed: ${state.exception.message}")
                         Toast.makeText(context, state.exception.message, Toast.LENGTH_LONG).show()
                     }
                     null -> Unit
@@ -69,17 +75,64 @@ class LoginFragment : Fragment() {
         }
     }
 
+    private fun showLoadingAnimation() {
+        binding.loadingOverlay.isVisible = true
+        binding.loadingOverlay.alpha = 0f
+        binding.loadingOverlay.animate().alpha(1f).setDuration(300).start()
+        
+        val imgDosa = binding.ivLoadingDosa
+        val imgBurger = binding.ivLoadingBurger
+        val imgPizza = binding.ivLoadingPizza
+        
+        ObjectAnimator.ofFloat(imgDosa, "translationY", 0f, -30f).apply {
+            duration = 500
+            repeatCount = ValueAnimator.INFINITE
+            repeatMode = ValueAnimator.REVERSE
+            interpolator = AccelerateDecelerateInterpolator()
+            start()
+        }
+        
+        ObjectAnimator.ofFloat(imgBurger, "translationY", 0f, -30f).apply {
+            duration = 500
+            startDelay = 150
+            repeatCount = ValueAnimator.INFINITE
+            repeatMode = ValueAnimator.REVERSE
+            interpolator = AccelerateDecelerateInterpolator()
+            start()
+        }
+        
+        ObjectAnimator.ofFloat(imgPizza, "translationY", 0f, -30f).apply {
+            duration = 500
+            startDelay = 300
+            repeatCount = ValueAnimator.INFINITE
+            repeatMode = ValueAnimator.REVERSE
+            interpolator = AccelerateDecelerateInterpolator()
+            start()
+        }
+    }
+
+    private fun hideLoadingAnimation() {
+        _binding?.loadingOverlay?.animate()?.alpha(0f)?.setDuration(300)?.withEndAction {
+            _binding?.loadingOverlay?.isVisible = false
+        }?.start()
+    }
+
     private fun handleRoleNavigation(role: String) {
         val action = when (role.lowercase()) {
-            "owner" -> R.id.action_login_to_owner
+            "admin" -> R.id.action_login_to_owner
             "manager" -> R.id.action_login_to_manager
-            "outlet_manager" -> R.id.action_login_to_outlet
+            "employee" -> R.id.action_login_to_outlet
             else -> {
                 Toast.makeText(context, "Unknown Role: $role", Toast.LENGTH_LONG).show()
                 return
             }
         }
-        findNavController().navigate(action)
+        try {
+            findNavController().navigate(action)
+        } catch (e: Exception) {
+            Log.e("PSK_DEBUG", "Navigation failed: ${e.message}")
+            Toast.makeText(context, "Navigation error: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onDestroyView() {

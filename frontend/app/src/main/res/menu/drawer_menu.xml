@@ -22,6 +22,12 @@
         <item
             android:id="@+id/aiInsightsFragment"
             android:title="View AI Insights" />
+        <item
+            android:id="@+id/branchesFragment"
+            android:title="All Branches" />
+        <item
+            android:id="@+id/manageManagersFragment"
+            android:title="Manage Managers" />
     </group>
     <item android:title="Settings">
         <menu>

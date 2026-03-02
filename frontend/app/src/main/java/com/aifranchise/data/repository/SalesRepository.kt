@@ -17,7 +17,7 @@ class SalesRepository @Inject constructor(
         emit(ResultState.Loading)
         try {
             val response = apiService.submitSales(request)
-            if (response.success) {
+            if (response.success && response.data != null) {
                 emit(ResultState.Success(response.data))
             } else {
                 emit(ResultState.Error(Exception(response.message)))

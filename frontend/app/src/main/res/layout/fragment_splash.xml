@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/splash_gradient_bg">
+
+    <!-- Food elements (floating placeholders) -->
+    <ImageView
+        android:id="@+id/ivFoodElement1"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@drawable/img_food_burger"
+        android:alpha="0"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="64dp"
+        android:layout_marginStart="32dp"/>
+
+    <ImageView
+        android:id="@+id/ivFoodElement2"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/img_food_pizza"
+        android:alpha="0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="128dp"
+        android:layout_marginEnd="48dp"/>
+
+    <!-- Logo / Brand Text Container -->
+    <LinearLayout
+        android:id="@+id/llLogoContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:alpha="0"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/ivAppLogo"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/img_psk_logo"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PSK Foods"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Smart Franchise Management"
+            android:textSize="14sp"
+            android:textColor="#E0E0E0"
+            android:layout_marginTop="8dp"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

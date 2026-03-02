@@ -66,15 +66,71 @@
                 android:textSize="16sp"
                 app:cornerRadius="8dp"/>
 
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="16dp"
-                android:visibility="gone"/>
-
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
+
+    <!-- Overlay Loading Screen -->
+    <FrameLayout
+        android:id="@+id/loadingOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#A6000000"
+        android:visibility="gone"
+        android:elevation="10dp"
+        android:clickable="true"
+        android:focusable="true">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:gravity="center">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <ImageView
+                    android:id="@+id/ivLoadingBurger"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/img_food_burger"
+                    android:layout_marginEnd="16dp"
+                    android:scaleType="centerCrop" />
+
+                <ImageView
+                    android:id="@+id/ivLoadingPizza"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/img_food_pizza"
+                    android:layout_marginEnd="16dp"
+                    android:scaleType="centerCrop" />
+                    
+                <ImageView
+                    android:id="@+id/ivLoadingDosa"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/img_food_dosa"
+                    android:scaleType="centerCrop" />
+            </LinearLayout>
+
+            <ProgressBar
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:indeterminateTint="@color/brand_yellow" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Preparing your kitchen..."
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="18sp"/>
+        </LinearLayout>
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

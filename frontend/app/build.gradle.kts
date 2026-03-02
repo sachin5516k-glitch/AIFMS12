@@ -32,16 +32,18 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            isShrinkResources = false
+            isDebuggable = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "1.8"
     }
     buildFeatures {
         viewBinding = true
@@ -52,9 +54,7 @@ android {
     // and specifically the JdkImageTransform.
     applicationVariants.all {
         val variant = this
-        if (variant.name.contains("debug", ignoreCase = true)) {
-            variant.javaCompileProvider.get().options.compilerArgs.add("-Xlint:-options")
-        }
+        variant.javaCompileProvider.get().options.compilerArgs.add("-Xlint:-options")
     }
 }
 
@@ -89,8 +89,21 @@ dependencies {
     // Utils
     implementation("com.google.code.gson:gson:2.10.1")
 
+    // Charts
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    // Image Loading
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    kapt("com.github.bumptech.glide:compiler:4.16.0")
+
+    // Shimmer Effect
+    implementation("com.facebook.shimmer:shimmer:0.5.0")
+
+    // SwipeRefreshLayout
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
     // Location & Maps
-    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
     implementation("com.google.android.gms:play-services-location:21.2.0")
 
     // Test

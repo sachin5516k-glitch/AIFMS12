@@ -1,24 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipeRefresh"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center_horizontal">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Manager Dashboard"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp"/>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <TextView android:id="@+id/tvBranchProfit" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Branch Profit: --%" android:textSize="18sp" android:layout_marginTop="8dp"/>
-    <TextView android:id="@+id/tvTopItems" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Top Selling Items: --" android:textSize="18sp" android:layout_marginTop="8dp"/>
-    <TextView android:id="@+id/tvStock" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Stock Availability: --%" android:textSize="18sp" android:layout_marginTop="8dp"/>
-    <TextView android:id="@+id/tvAttendance" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Staff Attendance: --%" android:textSize="18sp" android:layout_marginTop="8dp"/>
-    <TextView android:id="@+id/tvDailySales" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Daily Sales Summary: $--" android:textSize="18sp" android:layout_marginTop="8dp"/>
+    <ImageView
+        android:id="@+id/ivBackgroundBlur"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:alpha="0.30" />
 
-</LinearLayout>
+    <!-- Skeleton Loading Shimmer -->
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmerViewContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        app:shimmer_auto_start="true">
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <View android:layout_width="200dp" android:layout_height="32dp" android:background="#E0E0E0" android:layout_marginBottom="16dp"/>
+            
+            <LinearLayout android:layout_width="match_parent" android:layout_height="100dp" android:orientation="horizontal" android:baselineAligned="false">
+                <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="#E0E0E0" android:layout_marginEnd="8dp"/>
+                <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="#E0E0E0" android:layout_marginStart="8dp"/>
+            </LinearLayout>
+            
+            <LinearLayout android:layout_width="match_parent" android:layout_height="100dp" android:orientation="horizontal" android:layout_marginTop="16dp" android:baselineAligned="false">
+                <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="#E0E0E0" android:layout_marginEnd="8dp"/>
+                <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="#E0E0E0" android:layout_marginStart="8dp"/>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="150dp" android:background="#E0E0E0" android:layout_marginTop="16dp"/>
+        </LinearLayout>
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <ScrollView
+        android:id="@+id/contentScrollView"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Manager Dashboard"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorPrimary"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Metric Cards Row 1 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:baselineAligned="false">
+
+                <!-- Daily Sales -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Daily Sales" android:textColor="?attr/colorPrimaryVariant" android:textStyle="bold"/>
+                        <TextView android:id="@+id/tvDailySales" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="₹0" android:textSize="24sp" android:textStyle="bold" android:layout_marginTop="8dp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Branch Profit -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Branch Profit" android:textColor="?attr/colorPrimaryVariant" android:textStyle="bold"/>
+                        <TextView android:id="@+id/tvBranchProfit" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0%" android:textSize="24sp" android:textStyle="bold" android:layout_marginTop="8dp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- Metric Cards Row 2 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp"
+                android:baselineAligned="false">
+
+                <!-- Stock Health -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Stock Health" android:textColor="?attr/colorPrimaryVariant" android:textStyle="bold"/>
+                        <TextView android:id="@+id/tvStock" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0%" android:textSize="24sp" android:textStyle="bold" android:layout_marginTop="8dp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Attendance -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Staff Present" android:textColor="?attr/colorPrimaryVariant" android:textStyle="bold"/>
+                        <TextView android:id="@+id/tvAttendance" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0%" android:textSize="24sp" android:textStyle="bold" android:layout_marginTop="8dp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Top Items" android:textColor="?attr/colorPrimaryVariant" android:textStyle="bold"/>
+                    <TextView android:id="@+id/tvTopItems" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Loading..." android:textSize="14sp" android:layout_marginTop="8dp"/>
+                    <Button android:id="@+id/btnSuggestions" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="View AI Transfer Suggestions" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_marginTop="8dp"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

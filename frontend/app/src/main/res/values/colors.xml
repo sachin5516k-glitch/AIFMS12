@@ -8,13 +8,32 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     
-    <!-- Brand Colors -->
-    <color name="primary">#2563EB</color>
-    <color name="primary_variant">#1E40AF</color>
-    <color name="secondary">#1E40AF</color>
+    <color name="gray_100">#FFF5F5F5</color>
+    <color name="gray_800">#FF424242</color>
+
+    <!-- Brand Colors (PSK Foods) -->
+    <color name="brand_orange">#FF6B00</color>
+    <color name="brand_orange_light">#FF983F</color>
+    <color name="brand_red">#E53935</color>
+    <color name="brand_yellow">#FFC107</color>
+    <color name="brand_bg_dark">#121212</color>
+    <color name="brand_bg_light">#F8F8F8</color>
+    <color name="brand_card_dark">#1E1E1E</color>
+    <color name="brand_card_light">#FFFFFF</color>
+    
+    <color name="primary">@color/brand_orange</color>
+    <color name="primary_variant">@color/brand_red</color>
+    <color name="secondary">@color/brand_yellow</color>
     
     <!-- Status Colors -->
     <color name="success">#059669</color>
     <color name="warning">#D97706</color>
     <color name="danger">#DC2626</color>
+
+    <color name="gray_dark">#FF757575</color>
+    <color name="surface_color">#FFFFFF</color>
+    <color name="gray_light">#FFE0E0E0</color>
+    <color name="primary_color">@color/brand_orange</color>
+    <color name="green_dark">@color/success</color>
+    <color name="red_error">@color/danger</color>
 </resources>
