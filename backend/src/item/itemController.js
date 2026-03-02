@@ -1,5 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const Item = require('./itemModel');
+const Branch = require('../branch/branchModel');
+const Inventory = require('../inventory/inventoryModel');
 
 // @desc    Create a new item
 // @route   POST /api/items
@@ -19,6 +21,17 @@ const createItem = asyncHandler(async (req, res) => {
         unitPrice,
         createdBy: req.user._id,
     });
+
+    // Auto-create inventory entries for ALL existing branches
+    const branches = await Branch.find({});
+    const inventoryOps = branches.map(branch => ({
+        insertOne: {
+            document: { branchId: branch._id, itemId: item._id, quantity: 0 }
+        }
+    }));
+    if (inventoryOps.length > 0) {
+        await Inventory.bulkWrite(inventoryOps, { ordered: false }).catch(() => { });
+    }
 
     res.status(201).json({
         success: true,

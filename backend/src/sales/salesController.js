@@ -9,7 +9,12 @@ const submitSales = asyncHandler(async (req, res) => {
 
     if (!branchId || !itemId || !quantitySold || !paymentMode) {
         res.status(400);
-        throw new Error('Please add all fields');
+        throw new Error('Please add all fields: branchId, itemId, quantitySold, paymentMode');
+    }
+
+    if (quantitySold < 1) {
+        res.status(400);
+        throw new Error('Quantity must be at least 1');
     }
 
     const item = await Item.findById(itemId);
@@ -19,12 +24,17 @@ const submitSales = asyncHandler(async (req, res) => {
     }
 
     const totalAmount = item.unitPrice * quantitySold;
+    const sellingPrice = item.unitPrice;
 
     // Deduct inventory
     let inventory = await Inventory.findOne({ branchId, itemId });
-    if (!inventory || inventory.quantity < quantitySold) {
+    if (!inventory) {
         res.status(400);
-        throw new Error('Insufficient stock for this item');
+        throw new Error('No inventory record exists for this item at this branch');
+    }
+    if (inventory.quantity < quantitySold) {
+        res.status(400);
+        throw new Error(`Insufficient stock. Available: ${inventory.quantity}, Requested: ${quantitySold}`);
     }
 
     inventory.quantity -= quantitySold;
@@ -36,6 +46,7 @@ const submitSales = asyncHandler(async (req, res) => {
         itemId,
         quantitySold,
         totalAmount,
+        sellingPrice,
         paymentMode,
         createdBy: req.user._id,
     });

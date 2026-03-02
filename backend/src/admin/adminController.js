@@ -128,15 +128,14 @@ const getDashboardSummary = asyncHandler(async (req, res) => {
     try {
         const branchCount = await Branch.countDocuments();
 
-        const sales = await Sales.find({});
+        const sales = await Sales.find({}).populate('itemId', 'purchaseCost');
         let revenue = 0;
         let cogs = 0;
 
         sales.forEach(s => {
             revenue += s.totalAmount || 0;
-            const cost = s.quantitySold * (s.sellingPrice * 0.4); // rough mockup if purchase cost isn't denormalized. But wait, sellingPrice is there. We can approximate profitMargin. 
-            // In the DB, item has purchase cost. It's too complex to lookup here unless populated. Let's just assume a 40% margin average or calculate properly.
-            cogs += cost;
+            const purchaseCost = s.itemId?.purchaseCost || 0;
+            cogs += s.quantitySold * purchaseCost;
         });
 
         const profitPercentage = revenue > 0 ? (((revenue - cogs) / revenue) * 100).toFixed(1) : "0.0";
@@ -237,8 +236,7 @@ const createManualTransferRequest = asyncHandler(async (req, res) => {
     if (lat1 && lon1 && lat2 && lon2) {
         distanceKm = getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2);
     } else {
-        // Mock approximation if gps co-ords are missing from static seeded branches
-        distanceKm = Math.floor(Math.random() * 20) + 5;
+        distanceKm = 0;
     }
 
     const transferRequest = await StockTransferRequest.create({

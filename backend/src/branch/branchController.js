@@ -13,6 +13,19 @@ const createBranch = asyncHandler(async (req, res) => {
         createdBy: req.user._id,
     });
 
+    // Auto-create inventory entries for ALL existing items
+    const Item = require('../item/itemModel');
+    const Inventory = require('../inventory/inventoryModel');
+    const items = await Item.find({});
+    const inventoryOps = items.map(item => ({
+        insertOne: {
+            document: { branchId: branch._id, itemId: item._id, quantity: 0 }
+        }
+    }));
+    if (inventoryOps.length > 0) {
+        await Inventory.bulkWrite(inventoryOps, { ordered: false }).catch(() => { });
+    }
+
     res.status(201).json({
         success: true,
         message: 'Branch created successfully',
